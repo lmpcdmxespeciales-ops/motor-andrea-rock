@@ -8,7 +8,7 @@ app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 
 // Tu conexión a MongoDB Atlas
-const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://admin:ZuL4090eoeuPakWU@cluster0.bx6jilu.mongodb.net/?appName=Cluster0';
+const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://admin:AndraRock2026@cluster0.bx6jilu.mongodb.net/?appName=Cluster0';
 
 mongoose.connect(MONGO_URI)
     .then(() => console.log('🔥 Conectado exitosamente a la base de datos'))
