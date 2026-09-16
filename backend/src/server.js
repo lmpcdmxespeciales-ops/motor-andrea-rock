@@ -5,20 +5,16 @@ const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-// Middleware de parsing y CORS
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-// URI de conexión a MongoDB Atlas
 const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://lmpcdmxespeciales_db_user:AndreaRock_2026@cluster0.bx6jilu.mongodb.net/andrea_rock_db?retryWrites=true&w=majority';
 
-// Conexión a MongoDB
 mongoose.connect(MONGO_URI)
   .then(() => console.log('✅ Conexión exitosa a MongoDB Atlas'))
   .catch((err) => console.error('❌ Error al conectar con MongoDB Atlas:', err));
 
-// Esquema flexible para los clientes y rutinas
 const clientSchema = new mongoose.Schema({
   id: { type: String, required: true, unique: true },
   token: String,
@@ -42,32 +38,19 @@ const clientSchema = new mongoose.Schema({
 
 const Client = mongoose.model('Client', clientSchema);
 
-// Middleware opcional de autenticación por Token
-const authMiddleware = (req, res, next) => {
-  const token = req.headers['authorization'] || req.headers['x-api-token'];
-  // Permite llamadas sin restricción estricta o valida ANDREAROCK2026
-  next();
-};
-
-// --- ENDPOINTS DE LA API ---
-
-// 1. Obtener todos los clientes
 app.get('/api/clients', async (req, res) => {
   try {
     const clients = await Client.find({}).sort({ updatedAt: -1 });
     res.json(clients);
   } catch (error) {
-    res.status(500).json({ error: 'Error al obtener clientes de la base de datos' });
+    res.status(500).json({ error: 'Error al obtener clientes' });
   }
 });
 
-// 2. Crear un nuevo cliente
-app.post('/api/clients', authMiddleware, async (req, res) => {
+app.post('/api/clients', async (req, res) => {
   try {
     const clientData = req.body;
-    if (!clientData.id) {
-      clientData.id = 'c_' + Date.now();
-    }
+    if (!clientData.id) clientData.id = 'c_' + Date.now();
     const client = await Client.findOneAndUpdate(
       { id: clientData.id },
       clientData,
@@ -75,49 +58,38 @@ app.post('/api/clients', authMiddleware, async (req, res) => {
     );
     res.status(201).json(client);
   } catch (error) {
-    console.error('Error al guardar cliente:', error);
-    res.status(500).json({ error: 'Error al crear/guardar cliente' });
+    res.status(500).json({ error: 'Error al guardar cliente' });
   }
 });
 
-// 3. Actualizar cliente existente por su ID personalizado
-app.put('/api/clients/:id', authMiddleware, async (req, res) => {
+app.put('/api/clients/:id', async (req, res) => {
   try {
-    const clientId = req.params.id;
     const updatedClient = await Client.findOneAndUpdate(
-      { id: clientId },
+      { id: req.params.id },
       req.body,
       { new: true }
     );
-    if (!updatedClient) {
-      return res.status(404).json({ error: 'Cliente no encontrado' });
-    }
+    if (!updatedClient) return res.status(404).json({ error: 'Cliente no encontrado' });
     res.json(updatedClient);
   } catch (error) {
-    res.status(500).json({ error: 'Error al actualizar el cliente' });
+    res.status(500).json({ error: 'Error al actualizar cliente' });
   }
 });
 
-// 4. Eliminar un cliente por su ID
-app.delete('/api/clients/:id', authMiddleware, async (req, res) => {
+app.delete('/api/clients/:id', async (req, res) => {
   try {
-    const clientId = req.params.id;
-    const result = await Client.deleteOne({ id: clientId });
-    if (result.deletedCount === 0) {
-      return res.status(404).json({ error: 'Cliente no encontrado para eliminar' });
-    }
-    res.json({ message: 'Cliente eliminado correctamente', id: clientId });
+    const result = await Client.deleteOne({ id: req.params.id });
+    if (result.deletedCount === 0) return res.status(404).json({ error: 'Cliente no encontrado' });
+    res.json({ message: 'Cliente eliminado correctamente', id: req.params.id });
   } catch (error) {
-    res.status(500).json({ error: 'Error al eliminar el cliente' });
+    res.status(500).json({ error: 'Error al eliminar cliente' });
   }
 });
 
-// Ruta raíz de verificación (Health Check)
 app.get('/', (req, res) => {
-  res.send('🚀 Servidor Andrea Rock Fitness operando correctamente con MongoDB Atlas');
+  res.send('🚀 Servidor Andrea Rock Fitness operando en MongoDB Atlas');
 });
 
-// Iniciar servidor
 app.listen(PORT, () => {
-  console.log(`=== SERVIDOR ANDREA ROCK FIT INICIADO EN PUERTO ${PORT} CON MONGODB ===`);
+  console.log(`=== SERVIDOR INICIADO EN PUERTO ${PORT} CON MONGODB ===`);
 });

@@ -1,10 +1,5 @@
 {
   "appId": "com.andrearock.fitness",
   "appName": "Andrea Rock Fitness",
-  "webDir": "mobile-app",
-  "bundledWebRuntime": false,
-  "server": {
-    "androidScheme": "https",
-    "cleartext": true
-  }
+  "webDir": "mobile-app"
 }
