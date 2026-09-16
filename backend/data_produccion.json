@@ -1,0 +1,44 @@
+{
+  "admin": {
+    "usuario": "admin",
+    "passwordHash": "rock2026"
+  },
+  "clientes": [
+    {
+      "code": "RCK-10001",
+      "nombre": "Cliente Demo",
+      "creadoEn": "2026-08-28T00:01:40.598Z",
+      "activo": true,
+      "unidad": "kg",
+      "preferencia": "sin_restriccion",
+      "datosNutricion": {
+        "peso": 85,
+        "altura": 183,
+        "edad": 37,
+        "sexo": "hombre",
+        "actividad": 1.375,
+        "objetivo": -500
+      },
+      "rutinaSemanal": [
+        {
+          "nombre": "Día 1",
+          "ejercicios": [
+            {
+              "nombre": "Sentadilla libre trasera",
+              "grupo": "Cuádriceps",
+              "videoUrl": "https://www.youtube.com/watch?v=ultWZbUMPL8",
+              "series": [
+                {
+                  "peso": 80,
+                  "reps": 8,
+                  "hecha": false
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "menuNut": []
+    }
+  ]
+}

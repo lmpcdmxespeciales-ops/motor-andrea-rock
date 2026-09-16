@@ -1,0 +1,9 @@
+com.andrearock.fitness.app-pngs-0 C:\Users\MANUEL\Downloads\andrea-rock-entrenamiento\mobile-app\android\app\build\generated\res\pngs\release
+com.andrearock.fitness.app-resValues-1 C:\Users\MANUEL\Downloads\andrea-rock-entrenamiento\mobile-app\android\app\build\generated\res\resValues\release
+com.andrearock.fitness.app-updated_navigation_xml-2 C:\Users\MANUEL\Downloads\andrea-rock-entrenamiento\mobile-app\android\app\build\generated\updated_navigation_xml\release
+com.andrearock.fitness.app-packageReleaseResources-3 C:\Users\MANUEL\Downloads\andrea-rock-entrenamiento\mobile-app\android\app\build\intermediates\incremental\release\packageReleaseResources\merged.dir
+com.andrearock.fitness.app-packageReleaseResources-4 C:\Users\MANUEL\Downloads\andrea-rock-entrenamiento\mobile-app\android\app\build\intermediates\incremental\release\packageReleaseResources\stripped.dir
+com.andrearock.fitness.app-release-5 C:\Users\MANUEL\Downloads\andrea-rock-entrenamiento\mobile-app\android\app\build\intermediates\merged_res\release\mergeReleaseResources
+com.andrearock.fitness.app-main-6 C:\Users\MANUEL\Downloads\andrea-rock-entrenamiento\mobile-app\android\app\src\main\res
+com.andrearock.fitness.app-release-7 C:\Users\MANUEL\Downloads\andrea-rock-entrenamiento\mobile-app\android\app\src\release\res
+gradleHome-0 C:\Users\MANUEL\.gradle

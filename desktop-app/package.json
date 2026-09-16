@@ -1,0 +1,22 @@
+{
+  "name": "andrea-rock-fitness-desktop",
+  "version": "1.0.0",
+  "description": "Aplicación de Escritorio Andrea Rock Fitness",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win Portable"
+  },
+  "devDependencies": {
+    "electron": "^28.2.0",
+    "electron-builder": "^24.9.0"
+  },
+  "build": {
+    "appId": "com.andrearock.fitness",
+    "productName": "Andrea Rock Fitness",
+    "win": {
+      "icon": "logo.png",
+      "target": "portable"
+    }
+  }
+}

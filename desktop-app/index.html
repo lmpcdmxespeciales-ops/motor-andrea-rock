@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://unpkg.com https://fonts.googleapis.com https://fonts.gstatic.com https://api.andrearockfitness.com https://world.openfoodfacts.org https://www.youtube.com;">
+  <title>Andrea Rock Fitness App</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <style>
+    body { background-color: #080b11; color: #ffffff; font-family: 'Montserrat', sans-serif; }
+    .card-dark { background-color: #0f172a; border: 1px solid #1e293b; }
+    .btn-pink { background-color: #ff007a; color: white; }
+    .btn-pink:active { background-color: #d60067; }
+    .text-pink-custom { color: #ff007a; }
+
+    /* Discos de Kilogramos proporcionales */
+    .plate-kg-25 { background-color: #ef4444; width: 14px; height: 58px; }
+    .plate-kg-20 { background-color: #3b82f6; width: 13px; height: 50px; }
+    .plate-kg-15 { background-color: #eab308; width: 11px; height: 42px; }
+    .plate-kg-10 { background-color: #22c55e; width: 9px; height: 36px; }
+    .plate-kg-5  { background-color: #ffffff; width: 7px; height: 28px; color: black; }
+    .plate-kg-2_5{ background-color: #a855f7; width: 6px; height: 22px; }
+
+    /* Discos de Libras proporcionales */
+    .plate-lbs-45 { background-color: #ef4444; width: 14px; height: 58px; }
+    .plate-lbs-35 { background-color: #3b82f6; width: 13px; height: 50px; }
+    .plate-lbs-25 { background-color: #eab308; width: 11px; height: 42px; }
+    .plate-lbs-10 { background-color: #22c55e; width: 9px; height: 36px; }
+    .plate-lbs-5  { background-color: #ffffff; width: 7px; height: 28px; }
+    .plate-lbs-2_5{ background-color: #a855f7; width: 6px; height: 22px; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col p-4">
+
+  <div id="login-screen" class="flex flex-col items-center justify-center flex-1 my-auto">
+    <div class="card-dark p-6 rounded-3xl w-full max-w-sm text-center shadow-2xl border border-pink-500/20">
+      
+      <div class="mb-5 flex flex-col items-center">
+        <img src="logo.png" alt="Logo Andrea Rock" class="w-16 h-16 object-contain mb-2 rounded-2xl shadow-md border border-slate-800">
+        <h1 class="text-2xl font-black tracking-wider uppercase text-white">ANDREA <span class="text-pink-custom">ROCK</span></h1>
+        <span class="text-[9px] tracking-widest text-gray-400 uppercase font-bold mt-0.5">Elite Coaching & Training</span>
+      </div>
+      
+      <input type="text" id="token-input" placeholder="RCK-XXXXX" 
+        oninput="this.value = this.value.toUpperCase()" 
+        onkeydown="if(event.key === 'Enter') handleLogin()"
+        class="w-full bg-black/60 border border-gray-700 rounded-xl p-3.5 text-center text-xl font-mono tracking-widest uppercase mb-3 text-pink-custom focus:outline-none focus:border-pink-500">
+      
+      <div class="flex items-start text-left mb-4 space-x-2.5 px-1">
+        <input type="checkbox" id="legal-checkbox" class="mt-0.5 rounded bg-black border-gray-700 text-pink-500 focus:ring-pink-500 h-4 w-4">
+        <label for="legal-checkbox" class="text-[10px] text-gray-300 leading-tight">
+          He leído y acepto los <button type="button" onclick="openLegalModal('terms')" class="text-pink-custom underline font-bold">Términos y Condiciones</button> y la <button type="button" onclick="openLegalModal('privacy')" class="text-pink-custom underline font-bold">Política de Privacidad</button>.
+        </label>
+      </div>
+
+      <button onclick="handleLogin()" class="w-full btn-pink py-3.5 rounded-xl font-bold text-sm shadow-lg tracking-wider uppercase">
+        <span id="btn-text">INGRESAR A LA APP</span>
+      </button>
+
+      <div id="error-box" class="mt-4 p-3 bg-red-950/80 border border-red-700/80 rounded-xl hidden text-left">
+        <p id="error-title" class="text-red-400 font-bold text-xs uppercase mb-1">Error</p>
+        <p id="error-msg" class="text-red-200 text-xs">Acceso denegado.</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="app-screen" class="hidden flex-col flex-1">
+    <div class="flex justify-between items-center mb-4 pt-2 border-b border-slate-800 pb-3">
+      <div class="flex items-center space-x-2.5">
+        <img src="logo.png" alt="Logo Andrea Rock" class="w-9 h-9 object-contain rounded-xl border border-slate-800 shadow-sm">
+        <div>
+          <h1 class="text-base font-black tracking-wider uppercase leading-tight text-white">ANDREA <span class="text-pink-custom">ROCK</span></h1>
+          <p id="user-subtitle" class="text-[10px] text-gray-400 uppercase font-bold">Atleta</p>
+        </div>
+      </div>
+      
+      <div class="flex items-center space-x-2">
+        <button onclick="toggleUnit()" id="unit-btn" class="text-xs bg-pink-500/10 text-pink-custom border border-pink-500/30 px-3 py-1.5 rounded-xl font-black">KG</button>
+        <button onclick="handleLogout()" class="text-xs text-gray-300 bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-800 font-semibold">Salir</button>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-3 gap-2 mb-4">
+      <button id="tab-rutina" onclick="switchTab('rutina')" class="py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider btn-pink">Rutina</button>
+      <button id="tab-nutricion" onclick="switchTab('nutricion')" class="py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider card-dark text-gray-400">Nutrición</button>
+      <button id="tab-progreso" onclick="switchTab('progreso')" class="py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider card-dark text-gray-400">Progreso</button>
+    </div>
+
+    <div id="content-area" class="flex-1 pb-6"></div>
+  </div>
+
+  <div id="legal-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="card-dark w-full max-w-lg max-h-[80vh] rounded-3xl p-5 flex flex-col border border-pink-500/30 shadow-2xl">
+      <h3 id="modal-title" class="text-lg font-black text-pink-custom uppercase mb-3">Aviso Legal</h3>
+      <div id="modal-content" class="text-xs text-gray-300 overflow-y-auto space-y-3 pr-2 flex-1 leading-relaxed"></div>
+      <button onclick="closeLegalModal()" class="mt-4 w-full btn-pink py-3 rounded-xl font-bold text-xs uppercase tracking-wider">Entendido y Cerrar</button>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = 'https://api.andrearockfitness.com';
+    let currentClientData = null;
+    let routinesCatalogData = [];
+    let currentUnit = 'KG'; 
+    let html5QrCode = null;
+
+    // Función de saneamiento de texto contra inyección XSS
+    function escapeHTML(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    window.onload = function() {
+      const savedToken = localStorage.getItem('ar_client_token');
+      const savedData = localStorage.getItem('ar_client_data');
+      if (savedData) {
+        try {
+          currentClientData = JSON.parse(savedData);
+          showAppScreen();
+        } catch (e) { localStorage.removeItem('ar_client_data'); }
+      }
+      if (savedToken) {
+        document.getElementById('token-input').value = escapeHTML(savedToken);
+        handleLogin(true);
+      }
+    };
+
+    function toggleUnit() {
+      currentUnit = currentUnit === 'KG' ? 'LBS' : 'KG';
+      document.getElementById('unit-btn').innerText = currentUnit;
+      renderRutina(document.getElementById('content-area'));
+    }
+
+    async function handleLogin(silent = false) {
+      const tokenInput = document.getElementById('token-input').value.trim();
+      const checkbox = document.getElementById('legal-checkbox');
+      const errorBox = document.getElementById('error-box');
+      const errorMsg = document.getElementById('error-msg');
+      
+      if (!silent) errorBox.classList.add('hidden');
+      if (!tokenInput) return;
+
+      // Validación obligatoria del checkbox legal
+      if (!silent && !checkbox.checked) {
+        errorBox.classList.remove('hidden');
+        errorMsg.innerText = "Debes aceptar los Términos y Condiciones para continuar.";
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/api/client/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({ token: tokenInput }),
+          mode: 'cors'
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          currentClientData = data.client;
+          routinesCatalogData = data.catalog || [];
+          localStorage.setItem('ar_client_token', tokenInput);
+          localStorage.setItem('ar_client_data', JSON.stringify(data.client));
+          showAppScreen();
+        } else if (!silent) {
+          errorBox.classList.remove('hidden');
+          errorMsg.innerText = escapeHTML(data.error || 'Token inválido o membresía vencida.');
+        }
+      } catch (err) {
+        if (!silent && !currentClientData) {
+          errorBox.classList.remove('hidden');
+          errorMsg.innerText = "Error de conexión con el servidor de producción.";
+        }
+      }
+    }
+
+    function showAppScreen() {
+      document.getElementById('login-screen').classList.add('hidden');
+      document.getElementById('app-screen').classList.remove('hidden');
+      document.getElementById('app-screen').classList.add('flex');
+      document.getElementById('user-subtitle').innerText = escapeHTML(currentClientData.name);
+      switchTab('rutina');
+    }
+
+    function switchTab(tab) {
+      if (html5QrCode && html5QrCode.isScanning) {
+        html5QrCode.stop().catch(() => {});
+      }
+
+      ['rutina', 'nutricion', 'progreso'].forEach(t => {
+        const btn = document.getElementById(`tab-${t}`);
+        btn.className = t === tab 
+          ? 'py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider btn-pink shadow-md' 
+          : 'py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider card-dark text-gray-400';
+      });
+
+      const container = document.getElementById('content-area');
+      if (tab === 'rutina') renderRutina(container);
+      if (tab === 'nutricion') renderNutricion(container);
+      if (tab === 'progreso') renderProgreso(container);
+    }
+
+    // --- CÁLCULO DE DISCOS ESTRICTO ---
+    function calculatePlates(totalWeight, unit) {
+      let barWeight = unit === 'KG' ? 20 : 45;
+      if (totalWeight <= barWeight) return [];
+      
+      let remaining = (totalWeight - barWeight) / 2;
+      let availablePlates = unit === 'KG' ? [25, 20, 15, 10, 5, 2.5] : [45, 35, 25, 10, 5, 2.5];
+      let result = [];
+
+      for (let plate of availablePlates) {
+        while (remaining >= plate - 0.01) {
+          result.push(plate);
+          remaining -= plate;
+        }
+      }
+      return result.sort((a, b) => b - a);
+    }
+
+    function renderPlateWidget(weightStr) {
+      let baseNumber = parseFloat(weightStr) || 0;
+      let displayWeight = currentUnit === 'LBS' ? Math.round(baseNumber * 2.20462) : baseNumber;
+      
+      const plates = calculatePlates(displayWeight, currentUnit);
+      
+      let counts = {};
+      plates.forEach(p => counts[p] = (counts[p] || 0) + 1);
+      let summaryText = Object.keys(counts).map(p => `${counts[p]}x ${p} ${currentUnit}`).join(' + ');
+      if (!summaryText) summaryText = "Solo barra olímpica";
+
+      // Orden estricto: Discos pesados al centro (manga)
+      let platesLeftHTML = plates.map(p => {
+        let cssClass = currentUnit === 'KG' ? `plate-kg-${String(p).replace('.', '_')}` : `plate-lbs-${String(p).replace('.', '_')}`;
+        return `<div class="rounded-sm flex items-center justify-center text-[7px] font-black text-white shadow ${cssClass}">${p}</div>`;
+      }).join('');
+
+      let platesRightHTML = plates.slice().reverse().map(p => {
+        let cssClass = currentUnit === 'KG' ? `plate-kg-${String(p).replace('.', '_')}` : `plate-lbs-${String(p).replace('.', '_')}`;
+        return `<div class="rounded-sm flex items-center justify-center text-[7px] font-black text-white shadow ${cssClass}">${p}</div>`;
+      }).join('');
+      
+      let sideWeight = ((displayWeight - (currentUnit === 'KG' ? 20 : 45)) / 2).toFixed(1);
+
+      return `
+        <div class="mt-3 bg-black/70 p-3.5 rounded-2xl border border-slate-800">
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-[10px] text-gray-400 uppercase tracking-widest font-bold">Peso por lado: <strong class="text-white">${sideWeight} ${currentUnit}</strong></span>
+            <span class="text-[10px] text-pink-custom font-bold">${summaryText}</span>
+          </div>
+          
+          <div class="flex items-center justify-center space-x-1.5 py-1 overflow-x-auto">
+            <div class="w-2.5 h-8 bg-gray-600 rounded-l"></div>
+            <div class="flex space-x-1 items-center">${platesLeftHTML}</div>
+            <div class="w-6 h-3 bg-gray-400 rounded"></div>
+            <div class="flex space-x-1 items-center">${platesRightHTML}</div>
+            <div class="w-2.5 h-8 bg-gray-600 rounded-r"></div>
+          </div>
+          <p class="text-[9px] text-center text-gray-500 uppercase tracking-wider mt-2 font-bold">Gráfica Visual de Carga en Barra</p>
+        </div>
+      `;
+    }
+
+    function renderRutina(container) {
+      const routine = currentClientData.routine || [];
+      container.innerHTML = `
+        <div class="card-dark p-5 rounded-3xl mb-4 border border-slate-800 shadow-lg">
+          <h2 class="text-xl font-bold text-white mb-1">Programa de Entrenamiento</h2>
+          <p class="text-[11px] text-pink-custom font-bold uppercase tracking-widest mb-4">Bloque Asignado por Coach</p>
+          
+          ${routine.length === 0 ? '<p class="text-gray-400 text-xs italic py-4 text-center">Aún no tienes rutinas asignadas en tu expediente. Contacta a tu coach.</p>' : ''}
+
+          ${routine.map((ex, idx) => `
+            <div class="bg-black/50 p-4 rounded-2xl mb-4 border border-slate-800/80">
+              <div class="flex justify-between items-start mb-2">
+                <h3 class="font-bold text-pink-custom text-base">${escapeHTML(ex.exercise)}</h3>
+                <span class="text-xs bg-slate-800 px-2 py-1 rounded-lg text-gray-300">#${idx+1}</span>
+              </div>
+              <p class="text-sm text-gray-200 font-semibold mb-2">${escapeHTML(ex.series)} series x ${escapeHTML(ex.reps)} reps — <span class="text-white">${escapeHTML(ex.weight)}</span></p>
+              
+              ${ex.videoUrl ? `
+                <div class="mb-3 rounded-xl overflow-hidden border border-slate-700 bg-black aspect-video relative">
+                  <iframe src="${escapeHTML(ex.videoUrl)}" class="w-full h-full pointer-events-none" frameborder="0" allowfullscreen></iframe>
+                  <div class="absolute inset-0 bg-transparent"></div>
+                </div>
+              ` : ''}
+
+              ${renderPlateWidget(ex.weight)}
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function renderNutricion(container) {
+      const nut = currentClientData.nutrition || { calories: 0, macros: { protein: '0g', carbs: '0g', fats: '0g' }, meals: [] };
+      const meals = nut.meals || [];
+      const logs = currentClientData.nutritionLogs || [];
+      let loggedCals = logs.reduce((acc, curr) => acc + (curr.calories || 0), 0);
+      let goalCals = nut.calories || 0;
+      let percent = goalCals > 0 ? Math.min(Math.round((loggedCals / goalCals) * 100), 100) : 0;
+
+      container.innerHTML = `
+        <div class="card-dark p-5 rounded-3xl mb-4 border border-slate-800 shadow-lg">
+          <h2 class="text-xl font-bold text-pink-custom mb-1">Plan Nutricional</h2>
+          <p class="text-sm text-gray-300 font-medium mb-3">Meta Calórica: <span class="text-white font-bold">${goalCals > 0 ? goalCals + ' kcal' : 'Pendiente por definir'}</span></p>
+          
+          <div class="bg-black/50 p-3.5 rounded-2xl border border-slate-800 mb-3">
+            <div class="flex justify-between items-center mb-1 text-xs font-bold">
+              <span class="text-gray-400">Consumo Registrado</span>
+              <span class="text-pink-custom">${loggedCals} / ${goalCals} kcal (${percent}%)</span>
+            </div>
+            <div class="w-full bg-slate-800 h-3 rounded-full overflow-hidden">
+              <div class="bg-pink-500 h-full rounded-full transition-all duration-500" style="width: ${percent}%"></div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2 text-center pt-2 border-t border-slate-800">
+            <div class="bg-black/40 p-2 rounded-xl border border-slate-800"><span class="text-[10px] text-gray-400 uppercase font-bold">Proteína</span><p class="font-bold text-sm text-white">${escapeHTML(nut.macros?.protein || '0g')}</p></div>
+            <div class="bg-black/40 p-2 rounded-xl border border-slate-800"><span class="text-[10px] text-gray-400 uppercase font-bold">Carbos</span><p class="font-bold text-sm text-white">${escapeHTML(nut.macros?.carbs || '0g')}</p></div>
+            <div class="bg-black/40 p-2 rounded-xl border border-slate-800"><span class="text-[10px] text-gray-400 uppercase font-bold">Grasas</span><p class="font-bold text-sm text-white">${escapeHTML(nut.macros?.fats || '0g')}</p></div>
+          </div>
+        </div>
+
+        <div class="card-dark p-5 rounded-3xl mb-4 border border-slate-800 shadow-lg">
+          <h3 class="font-bold mb-3 text-xs uppercase tracking-wider text-pink-custom">Tiempos de Comida del Coach</h3>
+          ${meals.length === 0 ? '<p class="text-gray-400 text-xs italic py-2">Sin menús asignados hoy por el coach.</p>' : ''}
+          ${meals.map(m => `
+            <div class="bg-black/50 p-3.5 rounded-2xl mb-3 border border-slate-800">
+              <div class="flex justify-between items-center mb-1">
+                <h4 class="font-bold text-white text-sm">${escapeHTML(m.name)}</h4>
+                <span class="text-xs font-bold text-pink-custom">${m.calories} kcal</span>
+              </div>
+              <ul class="text-xs text-gray-300 list-disc list-inside space-y-1">
+                ${m.items.map(it => `<li>${escapeHTML(it)}</li>`).join('')}
+              </ul>
+            </div>
+          `).join('')}
+        </div>
+
+        <div class="card-dark p-5 rounded-3xl mb-4 border border-slate-800 shadow-lg">
+          <h3 class="font-bold mb-3 text-xs uppercase tracking-wider text-pink-custom">Alimentos Escaneados / Consumidos</h3>
+          ${logs.length === 0 ? '<p class="text-gray-400 text-xs italic">Aún no has registrado alimentos hoy.</p>' : ''}
+          ${logs.map(l => `
+            <div class="bg-black/50 p-3 rounded-xl mb-2 border border-slate-800 flex justify-between items-center text-xs">
+              <span class="text-white font-medium">${escapeHTML(l.food)}</span>
+              <span class="font-bold text-pink-custom">${l.calories} kcal</span>
+            </div>
+          `).join('')}
+        </div>
+
+        <div class="card-dark p-5 rounded-3xl border border-slate-800 shadow-lg">
+          <h3 class="font-bold mb-2 text-xs uppercase tracking-wider text-gray-200">Escáner de Código de Barras</h3>
+          <p class="text-xs text-gray-400 mb-3">Apunta con la cámara al código de barras para calcular su tabla nutrimental mundial.</p>
+          
+          <div id="reader" class="w-full mb-3 rounded-xl overflow-hidden bg-black border border-slate-700 hidden"></div>
+
+          <div class="space-y-3">
+            <button onclick="startRealScanner()" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs text-pink-custom font-bold py-3 rounded-xl uppercase tracking-wider">📷 Abrir Cámara y Escanear</button>
+            <input type="text" id="food-name" placeholder="Nombre del Alimento / Producto" class="w-full bg-black/60 border border-gray-700 rounded-xl p-3 text-xs text-white focus:border-pink-500 focus:outline-none">
+            <input type="number" id="food-cals" placeholder="Calorías detectadas (kcal)" class="w-full bg-black/60 border border-gray-700 rounded-xl p-3 text-xs text-white focus:border-pink-500 focus:outline-none">
+            <button onclick="submitFoodLog()" class="w-full btn-pink py-3 rounded-xl font-bold text-xs uppercase tracking-wider shadow-md">Guardar en Expediente</button>
+          </div>
+          <p id="log-status" class="text-center text-xs text-green-400 mt-2 hidden">¡Producto registrado con éxito!</p>
+        </div>
+      `;
+    }
+
+    async function startRealScanner() {
+      const readerDiv = document.getElementById('reader');
+      readerDiv.classList.remove('hidden');
+      
+      if (html5QrCode && html5QrCode.isScanning) {
+        try { await html5QrCode.stop(); } catch(e){}
+      }
+
+      try {
+        await navigator.mediaDevices.getUserMedia({ video: true });
+        html5QrCode = new Html5Qrcode("reader");
+        await html5QrCode.start(
+          { facingMode: "environment" },
+          { fps: 10, qrbox: { width: 250, height: 150 } },
+          async (decodedText) => {
+            try { await html5QrCode.stop(); } catch(e){}
+            readerDiv.classList.add('hidden');
+            document.getElementById('food-name').value = "Consultando producto...";
+            
+            let response = await fetch(`https://world.openfoodfacts.org/api/v0/product/${encodeURIComponent(decodedText)}.json`);
+            let data = await response.json();
+            if (data.status === 1 && data.product) {
+              let prod = data.product;
+              let name = prod.product_name || "Producto escaneado";
+              let cals = prod.nutriments && (prod.nutriments['energy-kcal_100g'] || prod.nutriments['energy-kcal']) ? Math.round(prod.nutriments['energy-kcal_100g'] || prod.nutriments['energy-kcal']) : 150;
+              
+              document.getElementById('food-name').value = escapeHTML(name);
+              document.getElementById('food-cals').value = cals;
+            } else {
+              document.getElementById('food-name').value = "Código: " + escapeHTML(decodedText);
+              document.getElementById('food-cals').value = "0";
+            }
+          },
+          (errorMessage) => {}
+        );
+      } catch (err) {
+        readerDiv.classList.add('hidden');
+        alert("Permiso de cámara denegado.");
+      }
+    }
+
+    async function submitFoodLog() {
+      const name = document.getElementById('food-name').value;
+      const cals = document.getElementById('food-cals').value;
+      if (!name) { alert("Ingresa o escanea un alimento"); return; }
+
+      try {
+        const res = await fetch(`${API_BASE}/api/client/nutrition-log`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: currentClientData.token, food: name, calories: cals })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          currentClientData.nutritionLogs = data.logs;
+          localStorage.setItem('ar_client_data', JSON.stringify(currentClientData));
+          document.getElementById('log-status').classList.remove('hidden');
+          setTimeout(() => document.getElementById('log-status').classList.add('hidden'), 3000);
+          renderNutricion(document.getElementById('content-area'));
+        }
+      } catch(e) {
+        if (!currentClientData.nutritionLogs) currentClientData.nutritionLogs = [];
+        currentClientData.nutritionLogs.push({ food: name, calories: Number(cals) });
+        localStorage.setItem('ar_client_data', JSON.stringify(currentClientData));
+        renderNutricion(document.getElementById('content-area'));
+      }
+    }
+
+    function renderProgreso(container) {
+      const prog = currentClientData.progress || [];
+      const unlocked = currentClientData.unlockedRoutines || [];
+
+      let catalogHTML = routinesCatalogData.length === 0 ? '<p class="text-gray-400 text-xs italic py-2">No hay programas adicionales en cartelera en este momento.</p>' : routinesCatalogData.map(rut => {
+        let isUnlocked = unlocked.includes(rut.id);
+        let isActive = currentClientData.activeRoutineId === rut.id;
+
+        return `
+          <div class="card-dark p-4 rounded-2xl mb-3 border border-slate-800 shadow-md">
+            <div class="flex justify-between items-start mb-2">
+              <div>
+                <span class="text-[9px] text-pink-custom font-bold uppercase tracking-widest">Coach ${escapeHTML(rut.coach)}</span>
+                <h4 class="text-sm font-black text-white uppercase">${escapeHTML(rut.title)}</h4>
+              </div>
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black ${rut.price === 0 ? 'bg-green-500/20 text-green-400 border border-green-500/40' : 'bg-pink-500/20 text-pink-custom border border-pink-500/40'}">
+                ${escapeHTML(rut.priceLabel)}
+              </span>
+            </div>
+            <p class="text-[11px] text-gray-300 mb-3">${escapeHTML(rut.description)}</p>
+            ${isUnlocked ? `
+              <button onclick="setActiveRoutine('${escapeHTML(rut.id)}')" class="w-full py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider ${isActive ? 'bg-slate-800 text-gray-400 border border-slate-700' : 'btn-pink'}">
+                ${isActive ? '✓ Rutina Activa Actual' : 'Cargar esta Rutina'}
+              </button>
+            ` : `
+              <button onclick="requestRoutinePurchase('${escapeHTML(rut.id)}', '${escapeHTML(rut.title)}')" class="w-full btn-pink py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider">
+                Solicitar Compra / Desbloquear (${escapeHTML(rut.priceLabel)}) →
+              </button>
+            `}
+          </div>
+        `;
+      }).join('');
+
+      container.innerHTML = `
+        <div class="card-dark p-5 rounded-3xl mb-4 border border-slate-800 shadow-lg">
+          <h2 class="text-xl font-bold text-pink-custom mb-4">Marcas Personales</h2>
+          ${prog.length === 0 ? '<p class="text-gray-400 text-xs italic">Aún no tienes marcas registradas en tu expediente.</p>' : ''}
+          ${prog.map(p => `
+            <div class="bg-black/50 p-4 rounded-2xl mb-3 border border-slate-800/80 flex justify-between items-center">
+              <div><h3 class="font-bold text-white text-base">${escapeHTML(p.exercise)}</h3><span class="text-xs text-gray-500">${escapeHTML(p.date)}</span></div>
+              <div class="text-2xl font-black text-pink-custom">${escapeHTML(p.weight)}</div>
+            </div>
+          `).join('')}
+        </div>
+
+        <div class="card-dark p-5 rounded-3xl border border-slate-800 shadow-lg">
+          <h3 class="text-lg font-bold text-white uppercase mb-1">Cartelera & Marketplace de Rutinas</h3>
+          <p class="text-xs text-gray-400 mb-4">Adquiere programas avanzados y desbloquéalos con confirmación del coach.</p>
+          ${catalogHTML}
+        </div>
+      `;
+    }
+
+    async function requestRoutinePurchase(rutId, rutTitle) {
+      if (!confirm(`¿Deseas solicitar el desbloqueo del programa "${rutTitle}"? Se enviará una notificación de compra al coach.`)) return;
+
+      try {
+        const res = await fetch(`${API_BASE}/api/client/request-purchase`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: currentClientData.token, routineId: rutId })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          currentClientData = data.client;
+          localStorage.setItem('ar_client_data', JSON.stringify(currentClientData));
+          alert("¡Solicitud enviada al coach con éxito!");
+          renderProgreso(document.getElementById('content-area'));
+        }
+      } catch(e) {
+        alert("Error de conexión al procesar la solicitud.");
+      }
+    }
+
+    function setActiveRoutine(rutId) {
+      let selected = routinesCatalogData.find(r => r.id === rutId);
+      if (selected) {
+        currentClientData.activeRoutineId = rutId;
+        currentClientData.routine = selected.routine;
+        localStorage.setItem('ar_client_data', JSON.stringify(currentClientData));
+        switchTab('rutina');
+        alert(`¡Programa "${selected.title}" cargado con éxito!`);
+      }
+    }
+
+    // --- FUNCIONES DEL MODAL LEGAL ---
+    function openLegalModal(type) {
+      const modal = document.getElementById('legal-modal');
+      const title = document.getElementById('modal-title');
+      const content = document.getElementById('modal-content');
+      
+      if (type === 'terms') {
+        title.innerText = "Términos y Condiciones de Uso";
+        content.innerHTML = `
+          <p><strong>1. Identidad del Creador:</strong> La aplicación "Andrea Rock Fitness App" es propiedad exclusiva de Andrea Rock y su equipo legal/técnico de desarrollo.</p>
+          <p><strong>2. Descargo de Responsabilidad Médica y Física:</strong> Las rutinas, entrenamientos y sugerencias nutricionales son de carácter orientativo para la mejora del rendimiento deportivo. Se recomienda encarecidamente consultar a un profesional de la salud antes de ejecutar cargas pesadas o cambios en la dieta. La empresa no se responsabiliza por lesiones resultantes del mal uso de instalaciones o técnicas de entrenamiento incorrectas.</p>
+          <p><strong>3. Reglas de Uso:</strong> Queda prohibida la reproducción parcial o total de las rutinas, la suplantación de identidad mediante tokens de acceso ajenos, y la distribución comercial del contenido exclusivo del coaching.</p>
+          <p><strong>4. Propiedad Intelectual:</strong> El diseño, logotipos, marcas, algoritmos de cálculo de discos y el código fuente completo son propiedad protegida por las leyes internacionales de propiedad intelectual y los registros nacionales correspondientes (INPI e INDAUTOR en México).</p>
+          <p><strong>5. Limitación de Responsabilidad:</strong> No nos hacemos responsables por caídas temporales del servidor, imprecisiones de redes externas o errores de escaneo de productos de terceros.</p>
+        `;
+      } else {
+        title.innerText = "Política de Privacidad";
+        content.innerHTML = `
+          <p><strong>1. Datos Recopilados:</strong> Únicamente recopilamos los datos mínimos necesarios para ofrecer el servicio: nombre del atleta, token de membresía, registros de calorías escaneadas y marcas de entrenamiento.</p>
+          <p><strong>2. Uso de Permisos (Cámara):</strong> La aplicación solicita acceso a la cámara del dispositivo exclusivamente para escanear códigos de barras de alimentos mediante la API de consulta nutricional mundial. No tomamos, almacenamos ni compartimos fotografías personales en servidores externos.</p>
+          <p><strong>3. Protección de Datos:</strong> Sus datos personales están protegidos y no serán comercializados ni transferidos a terceros sin su previo consentimiento explícito.</p>
+        `;
+      }
+      
+      modal.classList.remove('hidden');
+    }
+
+    function closeLegalModal() {
+      document.getElementById('legal-modal').classList.add('hidden');
+    }
+
+    function handleLogout() {
+      if (html5QrCode && html5QrCode.isScanning) {
+        html5QrCode.stop().catch(() => {});
+      }
+      localStorage.removeItem('ar_client_token');
+      localStorage.removeItem('ar_client_data');
+      currentClientData = null;
+      document.getElementById('app-screen').classList.add('hidden');
+      document.getElementById('login-screen').classList.remove('hidden');
+      document.getElementById('token-input').value = '';
+    }
+  </script>
+</body>
+</html>

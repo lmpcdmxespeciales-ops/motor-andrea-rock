@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Andrea Rock Fitness | Panel Entrenador</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-black: #03050d;
+            --bg-navy: #0a1128;
+            --bg-navy-dark: #050a1b;
+            --border-navy: #1c2b54;
+            --border-lila: #3b2054;
+            --color-magenta: #9b0d64;
+            --color-fuchsia: #ff007f;
+            --color-lila: #c77dff;
+            --color-lila-light: #e0aaff;
+            --text-white: #ffffff;
+            --text-gray: #a2a8d3;
+            --font-heading: 'Anton', sans-serif;
+            --font-body: 'Century Gothic', sans-serif;
+            --font-labels: 'Space Grotesk', sans-serif;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: var(--bg-black); color: var(--text-white); font-family: var(--font-body); padding: 12px; }
+        .hidden { display: none !important; }
+        .app-container { max-width: 850px; margin: 0 auto; }
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .brand-logo { font-family: var(--font-heading); font-size: 1.3rem; color: #fff; display: flex; align-items: center; gap: 8px; }
+        .brand-logo span { color: var(--color-fuchsia); }
+        .btn-pink { background: linear-gradient(135deg, var(--color-fuchsia), var(--color-magenta)); color: #fff; border: none; padding: 10px 16px; border-radius: 10px; font-weight: 700; cursor: pointer; font-family: var(--font-labels); text-transform: uppercase; font-size: 0.8rem; }
+        .btn-outline { background: var(--bg-navy-dark); border: 1px solid var(--border-navy); color: var(--color-lila-light); padding: 8px 14px; border-radius: 10px; font-weight: 700; cursor: pointer; font-family: var(--font-labels); text-transform: uppercase; font-size: 0.78rem; text-decoration: none; }
+        .card { background: var(--bg-navy); border: 1px solid var(--border-navy); border-radius: 16px; padding: 18px; margin-bottom: 16px; }
+        .client-card { background: var(--bg-black); border: 1px solid var(--border-navy); border-radius: 12px; padding: 14px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .client-card.active { border-color: var(--color-fuchsia); box-shadow: 0 0 10px rgba(255,0,127,0.3); }
+        input, select { width: 100%; background: var(--bg-black); border: 1px solid var(--border-navy); border-radius: 8px; padding: 10px; color: #fff; margin-bottom: 8px; }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <div class="header-top">
+        <div class="brand-logo"><img src="/logo.png" height="32" alt="Logo"> <span>ANDREA</span> ROCK</div>
+        <div>
+            <a href="/" class="btn-outline">Ver App Alumno</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+            <h2 style="font-family:var(--font-heading);">PANEL DE CONTROL DE CLIENTES</h2>
+            <button class="btn-pink" onclick="crearNuevoCliente()">+ Nuevo Cliente</button>
+        </div>
+        <div id="listaClientesAdmin"></div>
+    </div>
+
+    <div id="panelEditorCliente" class="card hidden">
+        <h3 id="lblClienteEditando" style="font-family:var(--font-heading); color:var(--color-lila-light); margin-bottom:12px;">Editando Cliente</h3>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <div>
+                <label style="font-size:0.7rem; color:var(--color-lila); font-family:var(--font-labels);">DÍAS DE ENTRENAMIENTO</label>
+                <select id="editDiasSelect">
+                    <option value="3">3 días / sem</option>
+                    <option value="4">4 días / sem</option>
+                    <option value="5">5 días / sem</option>
+                </select>
+            </div>
+            <div>
+                <label style="font-size:0.7rem; color:var(--color-lila); font-family:var(--font-labels);">TIPO DE SERVICIO</label>
+                <select id="editTipoServicioSelect">
+                    <option value="full">Full (Rutina + Nutrición)</option>
+                    <option value="rutina">Solo Rutina</option>
+                </select>
+            </div>
+        </div>
+        <button class="btn-pink" style="width:100%; margin-top:12px;" onclick="guardarEdicionCliente()">Guardar Configuración</button>
+    </div>
+</div>
+
+<script>
+    const API_URL = '/api';
+    let clientes = [];
+    let clienteSeleccionadoId = null;
+
+    document.addEventListener('DOMContentLoaded', cargarClientes);
+
+    async function cargarClientes() {
+        try {
+            const res = await fetch(`${API_URL}/clients`);
+            clientes = await res.json();
+            renderizarListaAdmin();
+        } catch(e) {
+            console.error("Error al obtener clientes del servidor", e);
+        }
+    }
+
+    function renderizarListaAdmin() {
+        const cont = document.getElementById('listaClientesAdmin');
+        if(!cont) return;
+        cont.innerHTML = clientes.map(c => `
+            <div class="client-card ${c.id === clienteSeleccionadoId ? 'active' : ''}">
+                <div>
+                    <strong style="color:#fff;">${c.nombre}</strong>
+                    <div style="font-size:0.75rem; color:var(--text-gray);">Token: <span style="color:var(--color-lila-light); font-weight:bold;">${c.token}</span> | Plan: ${c.tipoServicio.toUpperCase()}</div>
+                </div>
+                <button class="btn-outline" onclick="seleccionarParaEditar('${c.id}')">Editar</button>
+            </div>
+        `).join('');
+    }
+
+    function seleccionarParaEditar(id) {
+        clienteSeleccionadoId = id;
+        const c = clientes.find(item => item.id === id);
+        if(!c) return;
+        document.getElementById('lblClienteEditando').textContent = `Configurar Plan: ${c.nombre}`;
+        document.getElementById('editDiasSelect').value = c.programaDias || 5;
+        document.getElementById('editTipoServicioSelect').value = c.tipoServicio || 'full';
+        document.getElementById('panelEditorCliente').classList.remove('hidden');
+        renderizarListaAdmin();
+    }
+
+    async function guardarEdicionCliente() {
+        if(!clienteSeleccionadoId) return;
+        const dias = parseInt(document.getElementById('editDiasSelect').value);
+        const tipo = document.getElementById('editTipoServicioSelect').value;
+
+        try {
+            const res = await fetch(`${API_URL}/clients/${clienteSeleccionadoId}`, {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    programaDias: dias,
+                    tipoServicio: tipo,
+                    nutricionActiva: (tipo === 'full')
+                })
+            });
+            if(res.ok) {
+                alert('Cliente actualizado exitosamente.');
+                await cargarClientes();
+            }
+        } catch(e) {
+            alert('Error al guardar datos en el servidor.');
+        }
+    }
+
+    async function crearNuevoCliente() {
+        const nombre = prompt('Nombre completo del nuevo alumno:');
+        if(!nombre) return;
+        try {
+            const res = await fetch(`${API_URL}/clients`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    nombre,
+                    programaDias: 5,
+                    tipoServicio: 'full',
+                    nutricionActiva: true,
+                    rutinaSemanal: [],
+                    prs: [],
+                    historialPeso: []
+                })
+            });
+            if(res.ok) {
+                await cargarClientes();
+            }
+        } catch(e) {
+            alert('Error al crear el cliente.');
+        }
+    }
+</script>
+</body>
+</html>

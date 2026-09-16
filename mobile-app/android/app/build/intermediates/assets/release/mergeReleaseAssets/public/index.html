@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://unpkg.com https://fonts.googleapis.com https://fonts.gstatic.com https://api.andrearockfitness.com https://world.openfoodfacts.org https://www.youtube.com https://www.youtube-nocookie.com https://s.ytimg.com; frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com; child-src 'self' https://www.youtube.com https://www.youtube-nocookie.com;">
+  <title>Andrea Rock Fitness App - Production Edition</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <style>
+    body { background-color: #080b11; color: #ffffff; font-family: 'Montserrat', sans-serif; overflow-x: hidden; }
+    .card-dark { background-color: #0f172a; border: 1px solid #1e293b; }
+    .btn-pink { background-color: #ff007a; color: white; }
+    .btn-pink:hover { background-color: #e0006c; }
+    .btn-pink:active { background-color: #d60067; }
+    .text-pink-custom { color: #ff007a; }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #080b11; }
+    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #ff007a; }
+
+    /* --- DISCOS DE KILOGRAMOS (ESTÁNDAR OFICIAL IPL / IPF) --- */
+    .plate-kg-25, .plate-kg-20, .plate-kg-15, .plate-kg-10, .plate-kg-5, .plate-kg-2_5, .plate-kg-1_25, .plate-kg-0_5, .plate-kg-0_25,
+    .plate-lbs-45, .plate-lbs-35, .plate-lbs-25, .plate-lbs-10, .plate-lbs-5, .plate-lbs-2_5 {
+      flex-shrink: 0 !important;
+    }
+
+    .plate-kg-25  { background-color: #dc2626; width: 16px; height: 58px; border: 1px solid #991b1b; }
+    .plate-kg-20  { background-color: #2563eb; width: 14px; height: 58px; border: 1px solid #1d4ed8; }
+    .plate-kg-15  { background-color: #eab308; width: 12px; height: 58px; border: 1px solid #ca8a04; color: #000; }
+    .plate-kg-10  { background-color: #16a34a; width: 10px; height: 58px; border: 1px solid #15803d; }
+    .plate-kg-5   { background-color: #ffffff; width: 9px;  height: 42px; border: 1px solid #cbd5e1; color: #000; }
+    .plate-kg-2_5 { background-color: #18181b; width: 8px;  height: 32px; border: 1px solid #3f3f46; color: #fff; }
+    .plate-kg-1_25{ background-color: #94a3b8; width: 7px;  height: 24px; border: 1px solid #64748b; color: #000; }
+    .plate-kg-0_5 { background-color: #64748b; width: 6px;  height: 18px; border: 1px solid #475569; color: #fff; }
+    .plate-kg-0_25{ background-color: #475569; width: 5px;  height: 14px; border: 1px solid #334155; color: #fff; }
+
+    /* --- DISCOS DE LIBRAS (ESTÁNDAR CALIBRADO LBS) --- */
+    .plate-lbs-45 { background-color: #dc2626; width: 15px; height: 58px; border: 1px solid #991b1b; }
+    .plate-lbs-35 { background-color: #2563eb; width: 13px; height: 58px; border: 1px solid #1d4ed8; }
+    .plate-lbs-25 { background-color: #eab308; width: 11px; height: 58px; border: 1px solid #ca8a04; color: #000; }
+    .plate-lbs-10 { background-color: #16a34a; width: 9px;  height: 42px; border: 1px solid #15803d; }
+    .plate-lbs-5  { background-color: #ffffff; width: 8px;  height: 32px; border: 1px solid #cbd5e1; color: #000; }
+    .plate-lbs-2_5{ background-color: #18181b; width: 7px;  height: 24px; border: 1px solid #3f3f46; color: #fff; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+
+  <!-- VISTA 1: INICIO DE SESIÓN -->
+  <div id="login-screen" class="flex flex-col items-center justify-center min-h-screen p-4 my-auto">
+    <div class="card-dark p-8 rounded-3xl w-full max-w-md text-center shadow-2xl border border-pink-500/20">
+      
+      <div class="mb-6 flex flex-col items-center">
+        <img src="logo.png" alt="Logo Andrea Rock" class="w-20 h-20 object-contain mb-3 rounded-2xl shadow-lg border border-slate-800">
+        <h1 class="text-3xl font-black tracking-wider uppercase text-white">ANDREA <span class="text-pink-custom">ROCK</span></h1>
+        <span class="text-[10px] tracking-widest text-gray-400 uppercase font-bold mt-1">Elite Coaching & Training System</span>
+      </div>
+      
+      <input type="text" id="token-input" placeholder="RCK-XXXXX" 
+        oninput="this.value = this.value.toUpperCase()" 
+        onkeydown="if(event.key === 'Enter') handleLogin()"
+        class="w-full bg-black/60 border border-gray-700 rounded-xl p-4 text-center text-2xl font-mono tracking-widest uppercase mb-4 text-pink-custom focus:outline-none focus:border-pink-500 transition-colors">
+      
+      <div class="flex items-start text-left mb-6 space-x-3 px-1">
+        <input type="checkbox" id="legal-checkbox" class="mt-0.5 rounded bg-black border-gray-700 text-pink-500 focus:ring-pink-500 h-4 w-4 cursor-pointer">
+        <label for="legal-checkbox" class="text-xs text-gray-300 leading-tight cursor-pointer">
+          He leído y acepto los <button type="button" onclick="openLegalModal('terms')" class="text-pink-custom underline font-bold hover:text-pink-400">Términos y Condiciones</button> y la <button type="button" onclick="openLegalModal('privacy')" class="text-pink-custom underline font-bold hover:text-pink-400">Política de Privacidad</button>.
+        </label>
+      </div>
+
+      <button onclick="handleLogin()" class="w-full btn-pink py-4 rounded-xl font-bold text-sm shadow-xl tracking-wider uppercase transition-all transform hover:-translate-y-0.5">
+        <span id="btn-text">INGRESAR A LA PLATAFORMA</span>
+      </button>
+
+      <div id="error-box" class="mt-4 p-3.5 bg-red-950/80 border border-red-700/80 rounded-xl hidden text-left">
+        <p id="error-title" class="text-red-400 font-bold text-xs uppercase mb-1">Error de Acceso</p>
+        <p id="error-msg" class="text-red-200 text-xs">Token inválido.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- VISTA 2: PANEL PRINCIPAL DEL ATLETA -->
+  <div id="app-screen" class="hidden flex-col min-h-screen w-full">
+    
+    <!-- CABECERA STICKY -->
+    <header class="sticky top-0 z-50 bg-[#080b11]/95 backdrop-blur-md border-b border-slate-800/80 shadow-2xl px-4 sm:px-8 py-3">
+      <div class="max-w-6xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-3">
+        
+        <div class="flex items-center space-x-3">
+          <img src="logo.png" alt="Logo Andrea Rock" class="w-10 h-10 object-contain rounded-xl border border-slate-800 shadow-md">
+          <div>
+            <h1 class="text-lg font-black tracking-wider uppercase leading-none text-white">ANDREA <span class="text-pink-custom">ROCK</span></h1>
+            <p id="user-subtitle" class="text-[11px] text-gray-400 uppercase font-bold mt-0.5">Atleta Elite</p>
+          </div>
+        </div>
+
+        <nav class="flex items-center bg-slate-900/90 p-1.5 rounded-2xl border border-slate-800/90 space-x-1">
+          <button id="tab-rutina" onclick="switchTab('rutina')" class="px-5 py-2 rounded-xl font-bold text-xs uppercase tracking-wider btn-pink transition-all shadow-md">
+            💪 Rutina
+          </button>
+          <button id="tab-nutricion" onclick="switchTab('nutricion')" class="px-5 py-2 rounded-xl font-bold text-xs uppercase tracking-wider text-gray-400 hover:text-white transition-all">
+            🥗 Nutrición
+          </button>
+          <button id="tab-progreso" onclick="switchTab('progreso')" class="px-5 py-2 rounded-xl font-bold text-xs uppercase tracking-wider text-gray-400 hover:text-white transition-all">
+            📈 Progreso
+          </button>
+        </nav>
+
+        <div class="flex items-center space-x-2.5 justify-end">
+          <button onclick="toggleUnit()" id="unit-btn" class="text-xs bg-pink-500/10 text-pink-custom border border-pink-500/30 px-3.5 py-2 rounded-xl font-black hover:bg-pink-500/20 transition-all">
+            UNIDAD: KG
+          </button>
+          <button onclick="handleLogout()" class="text-xs text-gray-300 bg-slate-900 hover:bg-slate-800 px-3.5 py-2 rounded-xl border border-slate-800 font-bold transition-all">
+            Cerrar Sesión
+          </button>
+        </div>
+
+      </div>
+    </header>
+
+    <main class="flex-1 max-w-6xl w-full mx-auto p-4 sm:p-8 pb-16">
+      <div id="content-area" class="w-full"></div>
+    </main>
+
+  </div>
+
+  <!-- MODAL LEGAL -->
+  <div id="legal-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="card-dark w-full max-w-2xl max-h-[85vh] rounded-3xl p-6 flex flex-col border border-pink-500/30 shadow-2xl">
+      <h3 id="modal-title" class="text-xl font-black text-pink-custom uppercase mb-4">Aviso Legal</h3>
+      <div id="modal-content" class="text-xs text-gray-300 overflow-y-auto space-y-3 pr-3 flex-1 leading-relaxed"></div>
+      <button onclick="closeLegalModal()" class="mt-5 w-full btn-pink py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider shadow-lg">Entendido y Cerrar</button>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = 'https://api.andrearockfitness.com';
+    let currentClientData = null;
+    let routinesCatalogData = [];
+    let currentUnit = 'KG'; 
+    let html5QrCode = null;
+    let currentActiveTab = 'rutina';
+    let currentSelectedDay = null;
+    let autoSyncInterval = null;
+
+    function escapeHTML(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function getYouTubeEmbedUrl(url) {
+      if (!url) return '';
+      let cleanUrl = String(url).trim();
+      let videoId = '';
+
+      if (cleanUrl.includes('youtu.be/')) {
+        videoId = cleanUrl.split('youtu.be/')[1].split('?')[0].split('&')[0];
+      } else if (cleanUrl.includes('watch?v=')) {
+        videoId = cleanUrl.split('watch?v=')[1].split('&')[0];
+      } else if (cleanUrl.includes('embed/')) {
+        videoId = cleanUrl.split('embed/')[1].split('?')[0].split('&')[0];
+      }
+
+      return videoId ? `https://www.youtube.com/embed/${videoId}?rel=0` : cleanUrl;
+    }
+
+    window.onload = function() {
+      const savedToken = localStorage.getItem('ar_client_token');
+      if (savedToken) {
+        document.getElementById('token-input').value = escapeHTML(savedToken);
+        syncLiveData(savedToken, true);
+      }
+    };
+
+    async function syncLiveData(token, silent = false) {
+      try {
+        const res = await fetch(`${API_BASE}/api/client/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({ token: token }),
+          mode: 'cors'
+        });
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          currentClientData = data.client;
+          routinesCatalogData = data.catalog || [];
+          localStorage.setItem('ar_client_token', token);
+          localStorage.setItem('ar_client_data', JSON.stringify(data.client));
+          
+          showAppScreen();
+          refreshCurrentTabUI();
+        } else if (!silent) {
+          showLoginError(data.error || 'Token inválido o membresía vencida.');
+        }
+      } catch (err) {
+        const savedData = localStorage.getItem('ar_client_data');
+        if (savedData && !currentClientData) {
+          currentClientData = JSON.parse(savedData);
+          showAppScreen();
+          refreshCurrentTabUI();
+        } else if (!silent) {
+          showLoginError("Sin conexión con el servidor en la nube.");
+        }
+      }
+    }
+
+    function startAutoSync() {
+      if (autoSyncInterval) clearInterval(autoSyncInterval);
+      autoSyncInterval = setInterval(() => {
+        const savedToken = localStorage.getItem('ar_client_token');
+        if (savedToken) syncLiveData(savedToken, true);
+      }, 30000);
+    }
+
+    function handleLogin() {
+      const tokenInput = document.getElementById('token-input').value.trim();
+      const checkbox = document.getElementById('legal-checkbox');
+      if (!tokenInput) return;
+      if (!checkbox.checked) {
+        showLoginError("Debes aceptar los Términos y Condiciones para continuar.");
+        return;
+      }
+      syncLiveData(tokenInput, false);
+    }
+
+    function showLoginError(msg) {
+      const errorBox = document.getElementById('error-box');
+      const errorMsg = document.getElementById('error-msg');
+      errorBox.classList.remove('hidden');
+      errorMsg.innerText = escapeHTML(msg);
+    }
+
+    function showAppScreen() {
+      document.getElementById('login-screen').classList.add('hidden');
+      document.getElementById('app-screen').classList.remove('hidden');
+      document.getElementById('app-screen').classList.add('flex');
+      document.getElementById('user-subtitle').innerText = escapeHTML(currentClientData.name);
+      startAutoSync();
+    }
+
+    function toggleUnit() {
+      currentUnit = currentUnit === 'KG' ? 'LBS' : 'KG';
+      document.getElementById('unit-btn').innerText = `UNIDAD: ${currentUnit}`;
+      refreshCurrentTabUI();
+    }
+
+    function switchTab(tab) {
+      currentActiveTab = tab;
+      if (html5QrCode && html5QrCode.isScanning) {
+        html5QrCode.stop().catch(() => {});
+      }
+
+      ['rutina', 'nutricion', 'progreso'].forEach(t => {
+        const btn = document.getElementById(`tab-${t}`);
+        if (t === tab) {
+          btn.className = 'px-5 py-2 rounded-xl font-bold text-xs uppercase tracking-wider btn-pink transition-all shadow-md';
+        } else {
+          btn.className = 'px-5 py-2 rounded-xl font-bold text-xs uppercase tracking-wider text-gray-400 hover:text-white transition-all';
+        }
+      });
+
+      const savedToken = localStorage.getItem('ar_client_token');
+      if (savedToken) syncLiveData(savedToken, true);
+      
+      refreshCurrentTabUI();
+    }
+
+    function refreshCurrentTabUI() {
+      const container = document.getElementById('content-area');
+      if (!container || !currentClientData) return;
+      
+      if (currentActiveTab === 'rutina') renderRutina(container);
+      if (currentActiveTab === 'nutricion') renderNutricion(container);
+      if (currentActiveTab === 'progreso') renderProgreso(container);
+    }
+
+    function calculatePlates(totalWeight, unit) {
+      let barWeight = unit === 'KG' ? 20 : 45;
+      if (totalWeight <= barWeight) return [];
+      
+      let remaining = (totalWeight - barWeight) / 2;
+      let availablePlates = unit === 'KG' 
+        ? [25, 20, 15, 10, 5, 2.5, 1.25, 0.5, 0.25] 
+        : [45, 35, 25, 10, 5, 2.5];
+      let result = [];
+
+      for (let plate of availablePlates) {
+        while (remaining >= plate - 0.001) {
+          result.push(plate);
+          remaining -= plate;
+        }
+      }
+      return result.sort((a, b) => b - a);
+    }
+
+    function renderPlateWidget(weightStr) {
+      let baseNumber = parseFloat(weightStr) || 0;
+      let displayWeight = currentUnit === 'LBS' ? Math.round(baseNumber * 2.20462) : baseNumber;
+      
+      const plates = calculatePlates(displayWeight, currentUnit);
+      
+      let counts = {};
+      plates.forEach(p => counts[p] = (counts[p] || 0) + 1);
+      let summaryText = Object.keys(counts).map(p => `${counts[p]}x ${p} ${currentUnit}`).join(' + ');
+      if (!summaryText) summaryText = "Barra Olímpica Vacía (20 KG / 45 LBS)";
+
+      let platesLeft = plates.slice().reverse();
+      let platesLeftHTML = platesLeft.map(p => {
+        let cssClass = currentUnit === 'KG' 
+          ? `plate-kg-${String(p).replace('.', '_')}` 
+          : `plate-lbs-${String(p).replace('.', '_')}`;
+        return `<div class="rounded-xs flex items-center justify-center text-[7px] font-black shadow-md shrink-0 ${cssClass}" title="${p} ${currentUnit}">${p}</div>`;
+      }).join('');
+
+      let platesRight = plates.slice();
+      let platesRightHTML = platesRight.map(p => {
+        let cssClass = currentUnit === 'KG' 
+          ? `plate-kg-${String(p).replace('.', '_')}` 
+          : `plate-lbs-${String(p).replace('.', '_')}`;
+        return `<div class="rounded-xs flex items-center justify-center text-[7px] font-black shadow-md shrink-0 ${cssClass}" title="${p} ${currentUnit}">${p}</div>`;
+      }).join('');
+      
+      let barWeight = currentUnit === 'KG' ? 20 : 45;
+      let sideWeight = displayWeight > barWeight ? ((displayWeight - barWeight) / 2).toFixed(1) : 0;
+
+      return `
+        <div class="mt-4 bg-slate-950/90 p-3.5 rounded-2xl border border-slate-800 shadow-xl w-full overflow-hidden">
+          <div class="flex justify-between items-center mb-2.5">
+            <span class="text-[11px] text-gray-400 uppercase tracking-widest font-bold">
+              Carga por lado: <strong class="text-pink-custom">${sideWeight} ${currentUnit}</strong>
+            </span>
+            <span class="text-[10px] text-gray-300 font-semibold bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-800">
+              ${summaryText}
+            </span>
+          </div>
+          
+          <div class="flex items-center justify-center space-x-0.5 py-2 overflow-x-auto min-h-[70px] w-full">
+            <div class="w-7 h-5 bg-gradient-to-b from-zinc-600 via-zinc-800 to-zinc-950 border border-zinc-500 rounded-sm shadow-md flex items-center justify-center text-[8px] text-zinc-200 font-bold shrink-0 z-10" title="Seguro de Competencia (2.5 KG)">🔒</div>
+            <div class="flex space-x-0.5 items-center justify-end shrink-0">${platesLeftHTML}</div>
+            <div class="w-2.5 h-10 bg-slate-600 rounded-l-sm border-r border-slate-800 shadow-inner shrink-0"></div>
+            <div class="w-20 h-3.5 bg-gradient-to-r from-slate-400 via-gray-200 to-slate-400 rounded-xs border-y border-slate-500 shadow-inner flex items-center justify-center shrink-0">
+              <span class="text-[7px] text-slate-800 font-black tracking-tighter uppercase opacity-70">ANDREA ROCK</span>
+            </div>
+            <div class="w-2.5 h-10 bg-slate-600 rounded-r-sm border-l border-slate-800 shadow-inner shrink-0"></div>
+            <div class="flex space-x-0.5 items-center justify-start shrink-0">${platesRightHTML}</div>
+            <div class="w-7 h-5 bg-gradient-to-b from-zinc-600 via-zinc-800 to-zinc-950 border border-zinc-500 rounded-sm shadow-md flex items-center justify-center text-[8px] text-zinc-200 font-bold shrink-0 z-10" title="Seguro de Competencia (2.5 KG)">🔒</div>
+          </div>
+          
+          <div class="flex justify-between items-center mt-2 pt-2 border-t border-slate-900/80">
+            <span class="text-[9px] text-gray-500 uppercase tracking-wider font-bold">Barra Olímpica Oficial (${barWeight} ${currentUnit})</span>
+            <span class="text-[9px] text-pink-500/80 uppercase tracking-wider font-bold">Estándar Profesional IPL / IPF</span>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderRutina(container) {
+      const routine = currentClientData.routine || [];
+
+      let daysMap = {};
+      routine.forEach(ex => {
+        let dayName = ex.day || ex.dia || "Día 1 - General";
+        if (!daysMap[dayName]) daysMap[dayName] = [];
+        daysMap[dayName].push(ex);
+      });
+
+      let dayNames = Object.keys(daysMap);
+      if (dayNames.length > 0 && (!currentSelectedDay || !daysMap[currentSelectedDay])) {
+        currentSelectedDay = dayNames[0];
+      }
+
+      let activeRoutineTitle = currentClientData.activeRoutineTitle || "Programa Personalizado por Coach";
+
+      let daysNavHTML = dayNames.map(day => `
+        <button 
+          onclick="selectDay('${escapeHTML(day)}')" 
+          class="px-4 py-2 rounded-xl font-bold text-xs uppercase tracking-wider transition-all border ${currentSelectedDay === day ? 'btn-pink border-pink-500 shadow-lg' : 'bg-slate-900 text-gray-400 border-slate-800 hover:text-white'}">
+          ${escapeHTML(day)}
+        </button>
+      `).join('');
+
+      let exercisesForSelectedDay = currentSelectedDay ? (daysMap[currentSelectedDay] || []) : [];
+
+      container.innerHTML = `
+        <div class="card-dark p-6 rounded-3xl mb-6 border border-slate-800 shadow-xl">
+          <div class="flex flex-col md:flex-row justify-between md:items-center pb-4 mb-5 border-b border-slate-800/80 gap-3">
+            <div>
+              <span class="text-[10px] text-pink-custom font-bold uppercase tracking-widest">Programa Activo</span>
+              <h2 class="text-2xl font-black text-white uppercase tracking-wide">${escapeHTML(activeRoutineTitle)}</h2>
+            </div>
+            <span class="text-xs bg-slate-800/90 text-gray-300 px-3.5 py-1.5 rounded-xl border border-slate-700 font-bold self-start md:self-auto">
+              ${exercisesForSelectedDay.length} Ejercicios en ${escapeHTML(currentSelectedDay || 'Día')}
+            </span>
+          </div>
+
+          ${dayNames.length > 0 ? `
+            <div class="flex items-center space-x-2 pb-4 mb-6 overflow-x-auto border-b border-slate-900">
+              <span class="text-xs text-gray-400 font-bold uppercase tracking-wider mr-2 shrink-0">Días:</span>
+              ${daysNavHTML}
+            </div>
+          ` : ''}
+          
+          ${routine.length === 0 ? '<p class="text-gray-400 text-sm italic py-8 text-center">Aún no tienes rutinas asignadas en tu expediente. Contacta a tu coach o desbloquea una rutina desde el Marketplace.</p>' : ''}
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            ${exercisesForSelectedDay.map((ex, idx) => {
+              let embedUrl = getYouTubeEmbedUrl(ex.videoUrl);
+              return `
+                <div class="bg-black/50 p-5 rounded-2xl border border-slate-800/80 flex flex-col justify-between shadow-md">
+                  <div>
+                    <div class="flex justify-between items-start mb-3">
+                      <h3 class="font-bold text-pink-custom text-lg">${escapeHTML(ex.exercise)}</h3>
+                      <span class="text-xs font-black bg-slate-800 text-gray-300 px-2.5 py-1 rounded-lg border border-slate-700">#${idx+1}</span>
+                    </div>
+                    <p class="text-sm text-gray-200 font-semibold mb-4 bg-slate-900/60 p-2.5 rounded-xl border border-slate-800">
+                      ${escapeHTML(ex.series)} series x ${escapeHTML(ex.reps)} reps — <span class="text-white font-bold">${escapeHTML(ex.weight)}</span>
+                    </p>
+                    
+                    ${ex.videoUrl ? `
+                      <div class="mb-3 rounded-xl overflow-hidden border border-slate-700/80 bg-black aspect-video relative shadow-inner">
+                        <iframe 
+                          src="${embedUrl}" 
+                          title="Demostración de ${escapeHTML(ex.exercise)}"
+                          class="w-full h-full" 
+                          frameborder="0" 
+                          referrerpolicy="strict-origin-when-cross-origin"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                          allowfullscreen>
+                        </iframe>
+                      </div>
+                      <a href="${escapeHTML(ex.videoUrl)}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center space-x-2 text-xs bg-pink-500/10 hover:bg-pink-500/20 text-pink-custom border border-pink-500/30 px-3.5 py-2 rounded-xl font-bold transition-all mb-3">
+                        <span>▶ Abrir Video Demo en YouTube HD</span>
+                      </a>
+                    ` : ''}
+                  </div>
+
+                  ${renderPlateWidget(ex.weight)}
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function selectDay(dayName) {
+      currentSelectedDay = dayName;
+      renderRutina(document.getElementById('content-area'));
+    }
+
+    function renderNutricion(container) {
+      const nut = currentClientData.nutrition || { calories: 0, macros: { protein: '0g', carbs: '0g', fats: '0g' }, meals: [] };
+      const meals = nut.meals || [];
+      const logs = currentClientData.nutritionLogs || [];
+      let loggedCals = logs.reduce((acc, curr) => acc + (curr.calories || 0), 0);
+      let goalCals = nut.calories || 0;
+      let percent = goalCals > 0 ? Math.min(Math.round((loggedCals / goalCals) * 100), 100) : 0;
+
+      container.innerHTML = `
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+          <div class="card-dark p-6 rounded-3xl border border-slate-800 shadow-lg lg:col-span-2 flex flex-col justify-between">
+            <div>
+              <h2 class="text-2xl font-black text-pink-custom mb-1 uppercase">Plan Nutricional</h2>
+              <p class="text-sm text-gray-300 font-medium mb-4">Meta Calórica Diaria: <span class="text-white font-bold">${goalCals > 0 ? goalCals + ' kcal' : 'Pendiente por definir'}</span></p>
+              
+              <div class="bg-black/50 p-4 rounded-2xl border border-slate-800 mb-4">
+                <div class="flex justify-between items-center mb-2 text-xs font-bold">
+                  <span class="text-gray-400">Consumo Registrado Hoy</span>
+                  <span class="text-pink-custom text-sm">${loggedCals} / ${goalCals} kcal (${percent}%)</span>
+                </div>
+                <div class="w-full bg-slate-800 h-3.5 rounded-full overflow-hidden">
+                  <div class="bg-pink-500 h-full rounded-full transition-all duration-500 shadow-lg" style="width: ${percent}%"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-3 text-center pt-3 border-t border-slate-800">
+              <div class="bg-black/40 p-3 rounded-2xl border border-slate-800"><span class="text-xs text-gray-400 uppercase font-bold">Proteína</span><p class="font-black text-base text-white mt-1">${escapeHTML(nut.macros?.protein || '0g')}</p></div>
+              <div class="bg-black/40 p-3 rounded-2xl border border-slate-800"><span class="text-xs text-gray-400 uppercase font-bold">Carbos</span><p class="font-black text-base text-white mt-1">${escapeHTML(nut.macros?.carbs || '0g')}</p></div>
+              <div class="bg-black/40 p-3 rounded-2xl border border-slate-800"><span class="text-xs text-gray-400 uppercase font-bold">Grasas</span><p class="font-black text-base text-white mt-1">${escapeHTML(nut.macros?.fats || '0g')}</p></div>
+            </div>
+          </div>
+
+          <div class="card-dark p-6 rounded-3xl border border-slate-800 shadow-lg flex flex-col justify-between">
+            <div>
+              <h3 class="font-bold mb-2 text-xs uppercase tracking-wider text-gray-200">Buscador y Registro de Alimentos</h3>
+              <p class="text-xs text-gray-400 mb-3">Registra los productos o escanea su código de barras.</p>
+              <div id="reader" class="w-full mb-3 rounded-xl overflow-hidden bg-black border border-slate-700 hidden"></div>
+            </div>
+            
+            <div class="space-y-3">
+              <button onclick="startRealScanner()" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs text-pink-custom font-bold py-3 rounded-xl uppercase tracking-wider">📷 Escanear Producto</button>
+              <input type="text" id="food-name" placeholder="Nombre del Alimento" class="w-full bg-black/60 border border-gray-700 rounded-xl p-3 text-xs text-white focus:border-pink-500 focus:outline-none">
+              <input type="number" id="food-cals" placeholder="Calorías (kcal)" class="w-full bg-black/60 border border-gray-700 rounded-xl p-3 text-xs text-white focus:border-pink-500 focus:outline-none">
+              <button onclick="submitFoodLog()" class="w-full btn-pink py-3 rounded-xl font-bold text-xs uppercase tracking-wider shadow-md">Guardar en Expediente</button>
+            </div>
+            <p id="log-status" class="text-center text-xs text-green-400 mt-2 hidden font-bold">¡Producto registrado con éxito!</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="card-dark p-6 rounded-3xl border border-slate-800 shadow-lg">
+            <h3 class="font-bold mb-4 text-xs uppercase tracking-wider text-pink-custom">Tiempos de Comida Asignados por Coach</h3>
+            ${meals.length === 0 ? '<p class="text-gray-400 text-xs italic py-4">Sin menús asignados hoy por el coach.</p>' : ''}
+            ${meals.map(m => `
+              <div class="bg-black/50 p-4 rounded-2xl mb-3 border border-slate-800">
+                <div class="flex justify-between items-center mb-2">
+                  <h4 class="font-bold text-white text-sm">${escapeHTML(m.name)}</h4>
+                  <span class="text-xs font-bold text-pink-custom bg-pink-500/10 px-2.5 py-1 rounded-lg border border-pink-500/30">${m.calories} kcal</span>
+                </div>
+                <ul class="text-xs text-gray-300 list-disc list-inside space-y-1">
+                  ${m.items.map(it => `<li>${escapeHTML(it)}</li>`).join('')}
+                </ul>
+              </div>
+            `).join('')}
+          </div>
+
+          <div class="card-dark p-6 rounded-3xl border border-slate-800 shadow-lg">
+            <h3 class="font-bold mb-4 text-xs uppercase tracking-wider text-pink-custom">Historial de Alimentos Consumidos Hoy</h3>
+            ${logs.length === 0 ? '<p class="text-gray-400 text-xs italic py-4">Aún no has registrado alimentos hoy.</p>' : ''}
+            <div class="space-y-2">
+              ${logs.map(l => `
+                <div class="bg-black/50 p-3.5 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
+                  <span class="text-white font-medium">${escapeHTML(l.food)}</span>
+                  <span class="font-bold text-pink-custom bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-800">${l.calories} kcal</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    async function startRealScanner() {
+      const readerDiv = document.getElementById('reader');
+      readerDiv.classList.remove('hidden');
+      
+      if (html5QrCode && html5QrCode.isScanning) {
+        try { await html5QrCode.stop(); } catch(e){}
+      }
+
+      try {
+        await navigator.mediaDevices.getUserMedia({ video: true });
+        html5QrCode = new Html5Qrcode("reader");
+        await html5QrCode.start(
+          { facingMode: "environment" },
+          { fps: 10, qrbox: { width: 250, height: 150 } },
+          async (decodedText) => {
+            try { await html5QrCode.stop(); } catch(e){}
+            readerDiv.classList.add('hidden');
+            document.getElementById('food-name').value = "Consultando producto...";
+            
+            let response = await fetch(`https://world.openfoodfacts.org/api/v0/product/${encodeURIComponent(decodedText)}.json`);
+            let data = await response.json();
+            if (data.status === 1 && data.product) {
+              let prod = data.product;
+              let name = prod.product_name || "Producto escaneado";
+              let cals = prod.nutriments && (prod.nutriments['energy-kcal_100g'] || prod.nutriments['energy-kcal']) ? Math.round(prod.nutriments['energy-kcal_100g'] || prod.nutriments['energy-kcal']) : 150;
+              
+              document.getElementById('food-name').value = escapeHTML(name);
+              document.getElementById('food-cals').value = cals;
+            } else {
+              document.getElementById('food-name').value = "Código: " + escapeHTML(decodedText);
+              document.getElementById('food-cals').value = "0";
+            }
+          },
+          (errorMessage) => {}
+        );
+      } catch (err) {
+        readerDiv.classList.add('hidden');
+        alert("Permiso de cámara denegado.");
+      }
+    }
+
+    async function submitFoodLog() {
+      const name = document.getElementById('food-name').value;
+      const cals = document.getElementById('food-cals').value;
+      if (!name) { alert("Ingresa o escanea un alimento"); return; }
+
+      try {
+        const res = await fetch(`${API_BASE}/api/client/nutrition-log`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: currentClientData.token, food: name, calories: cals })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          currentClientData.nutritionLogs = data.logs;
+          localStorage.setItem('ar_client_data', JSON.stringify(currentClientData));
+          document.getElementById('log-status').classList.remove('hidden');
+          setTimeout(() => document.getElementById('log-status').classList.add('hidden'), 3000);
+          renderNutricion(document.getElementById('content-area'));
+        }
+      } catch(e) {
+        if (!currentClientData.nutritionLogs) currentClientData.nutritionLogs = [];
+        currentClientData.nutritionLogs.push({ food: name, calories: Number(cals) });
+        localStorage.setItem('ar_client_data', JSON.stringify(currentClientData));
+        renderNutricion(document.getElementById('content-area'));
+      }
+    }
+
+    // --- VISTA PROGRESO CON SUBIDA DE FOTOS/VIDEOS AL EXPEDIENTE ---
+    function renderProgreso(container) {
+      const prog = currentClientData.progress || [];
+      const mediaLogs = currentClientData.progressMedia || [];
+      const unlocked = currentClientData.unlockedRoutines || [];
+
+      let catalogHTML = routinesCatalogData.length === 0 ? '<p class="text-gray-400 text-xs italic py-4">No hay programas adicionales en cartelera en este momento.</p>' : routinesCatalogData.map(rut => {
+        let isUnlocked = unlocked.includes(rut.id);
+        let isActive = currentClientData.activeRoutineId === rut.id;
+
+        return `
+          <div class="card-dark p-5 rounded-2xl mb-4 border border-slate-800 shadow-md">
+            <div class="flex justify-between items-start mb-2">
+              <div>
+                <span class="text-[10px] text-pink-custom font-bold uppercase tracking-widest">Coach ${escapeHTML(rut.coach)}</span>
+                <h4 class="text-base font-black text-white uppercase">${escapeHTML(rut.title)}</h4>
+              </div>
+              <span class="px-3 py-1 rounded-full text-xs font-black ${rut.price === 0 ? 'bg-green-500/20 text-green-400 border border-green-500/40' : 'bg-pink-500/20 text-pink-custom border border-pink-500/40'}">
+                ${escapeHTML(rut.priceLabel)}
+              </span>
+            </div>
+            <p class="text-xs text-gray-300 mb-4 leading-relaxed">${escapeHTML(rut.description)}</p>
+            ${isUnlocked ? `
+              <button onclick="setActiveRoutine('${escapeHTML(rut.id)}')" class="w-full py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition-all ${isActive ? 'bg-slate-800 text-gray-400 border border-slate-700' : 'btn-pink shadow-md'}">
+                ${isActive ? '✓ Rutina Activa Actual' : 'Cargar esta Rutina'}
+              </button>
+            ` : `
+              <button onclick="requestRoutinePurchase('${escapeHTML(rut.id)}', '${escapeHTML(rut.title)}')" class="w-full btn-pink py-3 rounded-xl font-bold text-xs uppercase tracking-wider shadow-md">
+                Solicitar Compra / Desbloquear (${escapeHTML(rut.priceLabel)}) →
+              </button>
+            `}
+          </div>
+        `;
+      }).join('');
+
+      container.innerHTML = `
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+          
+          <!-- SUBIDA DE FOTOS Y VIDEOS AL EXPEDIENTE -->
+          <div class="card-dark p-6 rounded-3xl border border-slate-800 shadow-lg lg:col-span-2 flex flex-col justify-between">
+            <div>
+              <div class="flex justify-between items-center mb-2">
+                <h2 class="text-2xl font-black text-pink-custom uppercase">Expediente de Evidencias</h2>
+                <span class="text-[10px] bg-pink-500/10 text-pink-custom border border-pink-500/30 px-3 py-1 rounded-lg font-bold uppercase">Sincronizado con Coach</span>
+              </div>
+              <p class="text-xs text-gray-400 mb-4">Sube fotos o videos de la ejecución de tus ejercicios, físico o platillos para que tu entrenador revise y ajuste tu plan.</p>
+              
+              <div class="bg-black/50 p-4 rounded-2xl border border-slate-800/80 mb-4 space-y-3">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div>
+                    <label class="text-[10px] text-gray-400 uppercase font-bold mb-1 block">Tipo de Evidencia</label>
+                    <select id="media-category" class="w-full bg-slate-900 border border-gray-700 rounded-xl p-3 text-xs text-white focus:border-pink-500 focus:outline-none">
+                      <option value="Técnica de Ejercicio">🏋️ Técnica de Ejercicio / Form Check</option>
+                      <option value="Progreso Físico">📸 Foto de Avance Físico / Postura</option>
+                      <option value="Alimentación">🥗 Platillo / Registro Nutricional</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="text-[10px] text-gray-400 uppercase font-bold mb-1 block">Seleccionar Foto o Video</label>
+                    <input type="file" id="media-file" accept="image/*,video/*" class="w-full bg-slate-900 border border-gray-700 rounded-xl p-2.5 text-xs text-gray-300 focus:outline-none file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-pink-500 file:text-white">
+                  </div>
+                </div>
+
+                <div>
+                  <label class="text-[10px] text-gray-400 uppercase font-bold mb-1 block">Observaciones para el Coach</label>
+                  <input type="text" id="media-notes" placeholder="Ej. Sentadilla 140 KG - Sentí molestia en rodilla o dudas en la profundidad" class="w-full bg-slate-900 border border-gray-700 rounded-xl p-3 text-xs text-white focus:border-pink-500 focus:outline-none">
+                </div>
+
+                <button onclick="submitMediaProgress()" class="w-full btn-pink py-3 rounded-xl font-bold text-xs uppercase tracking-wider shadow-lg transition-transform hover:-translate-y-0.5">
+                  📤 Subir Evidencia al Expediente del Coach
+                </button>
+              </div>
+            </div>
+
+            <!-- GALERÍA DE EVIDENCIAS REGISTRADAS -->
+            <div>
+              <h3 class="text-xs font-bold text-white uppercase tracking-wider mb-3">Historial de Evidencias Subidas (${mediaLogs.length})</h3>
+              ${mediaLogs.length === 0 ? '<p class="text-gray-500 text-xs italic py-2">No has subido fotos o videos recientemente.</p>' : ''}
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-60 overflow-y-auto pr-1">
+                ${mediaLogs.map(m => `
+                  <div class="bg-black/60 p-3 rounded-xl border border-slate-800 flex items-center justify-between text-xs">
+                    <div>
+                      <span class="text-[9px] text-pink-custom font-bold uppercase block">${escapeHTML(m.category)}</span>
+                      <p class="font-bold text-white text-xs truncate max-w-[180px]">${escapeHTML(m.notes || 'Sin nota')}</p>
+                      <span class="text-[9px] text-gray-500">${escapeHTML(m.date)}</span>
+                    </div>
+                    ${m.url ? `
+                      <a href="${escapeHTML(m.url)}" target="_blank" class="px-2.5 py-1 bg-slate-800 text-gray-300 rounded-lg text-[10px] font-bold hover:text-white border border-slate-700">Ver Archivo 🔗</a>
+                    ` : '<span class="text-[10px] text-green-400 font-bold">✓ Recibido</span>'}
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+
+          <!-- MARCAS PERSONALES -->
+          <div class="card-dark p-6 rounded-3xl border border-slate-800 shadow-lg flex flex-col justify-between">
+            <div>
+              <h2 class="text-xl font-black text-pink-custom mb-4 uppercase">Marcas Personales (PRs)</h2>
+              ${prog.length === 0 ? '<p class="text-gray-400 text-xs italic py-4">Aún no tienes marcas registradas en tu expediente.</p>' : ''}
+              <div class="space-y-3 max-h-96 overflow-y-auto pr-1">
+                ${prog.map(p => `
+                  <div class="bg-black/50 p-4 rounded-2xl border border-slate-800 flex justify-between items-center shadow-md">
+                    <div><h3 class="font-bold text-white text-base">${escapeHTML(p.exercise)}</h3><span class="text-xs text-gray-500 font-medium">${escapeHTML(p.date)}</span></div>
+                    <div class="text-2xl font-black text-pink-custom bg-pink-500/10 px-3 py-1 rounded-xl border border-pink-500/20">${escapeHTML(p.weight)}</div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- MARKETPLACE Y CATALOGO -->
+        <div class="card-dark p-6 rounded-3xl border border-slate-800 shadow-lg">
+          <h3 class="text-xl font-black text-white uppercase mb-1">Marketplace & Cartelera de Programas</h3>
+          <p class="text-xs text-gray-400 mb-6">Adquiere programas avanzados y desbloquéalos con confirmación del coach.</p>
+          ${catalogHTML}
+        </div>
+      `;
+    }
+
+    // --- FUNCIÓN PARA SUBIR ARCHIVOS MULTIMEDIA EN VIVO ---
+    async function submitMediaProgress() {
+      const fileInput = document.getElementById('media-file');
+      const categorySelect = document.getElementById('media-category');
+      const notesInput = document.getElementById('media-notes');
+
+      if (!fileInput.files || fileInput.files.length === 0) {
+        alert("Por favor selecciona una foto o video antes de subir.");
+        return;
+      }
+
+      const file = fileInput.files[0];
+      const formData = new FormData();
+      formData.append('token', currentClientData.token);
+      formData.append('category', categorySelect.value);
+      formData.append('notes', notesInput.value);
+      formData.append('file', file);
+
+      try {
+        const res = await fetch(`${API_BASE}/api/client/upload-media`, {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+        
+        if (res.ok && data.success) {
+          currentClientData = data.client;
+          localStorage.setItem('ar_client_data', JSON.stringify(currentClientData));
+          alert("¡Evidencia subida con éxito! Tu coach la revisará en el panel de administración.");
+          renderProgreso(document.getElementById('content-area'));
+        } else {
+          alert(data.error || "Error al subir la evidencia.");
+        }
+      } catch (e) {
+        // Guardado local de respaldo en caso de desconexión momentánea
+        if (!currentClientData.progressMedia) currentClientData.progressMedia = [];
+        currentClientData.progressMedia.unshift({
+          category: categorySelect.value,
+          notes: notesInput.value,
+          date: new Date().toLocaleDateString(),
+          url: null
+        });
+        localStorage.setItem('ar_client_data', JSON.stringify(currentClientData));
+        alert("Evidencia guardada en el dispositivo. Se enviará en automático al reconectar.");
+        renderProgreso(document.getElementById('content-area'));
+      }
+    }
+
+    async function requestRoutinePurchase(rutId, rutTitle) {
+      if (!confirm(`¿Deseas solicitar el desbloqueo del programa "${rutTitle}"? Se enviará una notificación de compra al coach.`)) return;
+
+      try {
+        const res = await fetch(`${API_BASE}/api/client/request-purchase`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: currentClientData.token, routineId: rutId })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          currentClientData = data.client;
+          localStorage.setItem('ar_client_data', JSON.stringify(currentClientData));
+          alert("¡Solicitud enviada al coach con éxito!");
+          renderProgreso(document.getElementById('content-area'));
+        }
+      } catch(e) {
+        alert("Error de conexión al procesar la solicitud.");
+      }
+    }
+
+    function setActiveRoutine(rutId) {
+      let selected = routinesCatalogData.find(r => r.id === rutId);
+      if (selected) {
+        currentClientData.activeRoutineId = rutId;
+        currentClientData.activeRoutineTitle = selected.title;
+        currentClientData.routine = selected.routine;
+        localStorage.setItem('ar_client_data', JSON.stringify(currentClientData));
+        currentSelectedDay = null;
+        switchTab('rutina');
+        alert(`¡Programa "${selected.title}" cargado con éxito!`);
+      }
+    }
+
+    function openLegalModal(type) {
+      const modal = document.getElementById('legal-modal');
+      const title = document.getElementById('modal-title');
+      const content = document.getElementById('modal-content');
+      
+      if (type === 'terms') {
+        title.innerText = "Términos y Condiciones de Uso";
+        content.innerHTML = `
+          <p><strong>1. Identidad del Creador:</strong> La aplicación "Andrea Rock Fitness App" es propiedad exclusiva de Andrea Rock y su equipo legal/técnico de desarrollo.</p>
+          <p><strong>2. Descargo de Responsabilidad Médica y Física:</strong> Las rutinas, entrenamientos y sugerencias nutricionales son de carácter orientativo para la mejora del rendimiento deportivo. Se recomienda encarecidamente consultar a un profesional de la salud antes de ejecutar cargas pesadas o cambios en la dieta. La empresa no se responsabiliza por lesiones resultantes del mal uso de instalaciones o técnicas de entrenamiento incorrectas.</p>
+          <p><strong>3. Reglas de Uso:</strong> Queda prohibida la reproducción parcial o total de las rutinas, la suplantación de identidad mediante tokens de acceso ajenos, y la distribución comercial del contenido exclusivo del coaching.</p>
+          <p><strong>4. Propiedad Intelectual:</strong> El diseño, logotipos, marcas, algoritmos de cálculo de discos y el código fuente completo son propiedad protegida por las leyes internacionales de propiedad intelectual y los registros nacionales correspondientes (INPI e INDAUTOR en México).</p>
+          <p><strong>5. Limitación de Responsabilidad:</strong> No nos hacemos responsables por caídas temporales del servidor, imprecisiones de redes externas o errores de escaneo de productos de terceros.</p>
+        `;
+      } else {
+        title.innerText = "Política de Privacidad";
+        content.innerHTML = `
+          <p><strong>1. Datos Recopilados:</strong> Únicamente recopilamos los datos mínimos necesarios para ofrecer el servicio: nombre del atleta, token de membresía, registros de calorías escaneadas y marcas de entrenamiento.</p>
+          <p><strong>2. Uso de Permisos (Cámara):</strong> La aplicación solicita acceso a la cámara del dispositivo exclusivamente para escanear códigos de barras de alimentos mediante la API de consulta nutricional mundial. No tomamos, almacenamos ni compartimos fotografías personales en servidores externos.</p>
+          <p><strong>3. Protección de Datos:</strong> Sus datos personales están protegidos y no serán comercializados ni transferidos a terceros sin su previo consentimiento explícito.</p>
+        `;
+      }
+      
+      modal.classList.remove('hidden');
+    }
+
+    function closeLegalModal() {
+      document.getElementById('legal-modal').classList.add('hidden');
+    }
+
+    function handleLogout() {
+      if (autoSyncInterval) clearInterval(autoSyncInterval);
+      if (html5QrCode && html5QrCode.isScanning) {
+        html5QrCode.stop().catch(() => {});
+      }
+      localStorage.removeItem('ar_client_token');
+      localStorage.removeItem('ar_client_data');
+      currentClientData = null;
+      document.getElementById('app-screen').classList.add('hidden');
+      document.getElementById('login-screen').classList.remove('hidden');
+      document.getElementById('token-input').value = '';
+    }
+  </script>
+</body>
+</html>

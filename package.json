@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "name": "andrea-rock-motor",
   "version": "1.0.0",
   "description": "Motor Backend para base de datos",
@@ -12,4 +13,30 @@
     "express": "^4.19.2",
     "mongoose": "^8.3.2"
   }
+=======
+  "name": "andrea-rock-entrenamiento",
+  "version": "1.0.0",
+  "description": "Plataforma integrada de entrenamiento y nutricion Andrea Rock Fitness",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "nodemon backend/server.js",
+    "cap:sync": "npx cap sync android",
+    "cap:open": "npx cap open android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.1",
+    "@capacitor/core": "^8.5.1",
+    "cors": "^2.8.5",
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.2.2",
+    "nodemon": "^3.1.0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+>>>>>>> b80a78f (Restauración de archivos y estructura de producción)
 }

@@ -1,0 +1,6 @@
+{
+	"appId": "com.andrearock.fitness",
+	"appName": "Andrea Rock Fitness",
+	"webDir": "www",
+	"bundledWebRuntime": false
+}

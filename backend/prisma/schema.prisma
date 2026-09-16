@@ -1,0 +1,40 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Client {
+  id                Int             @id @default(autoincrement())
+  token             String          @unique
+  nombre            String
+  programaDias      Int             @default(5)
+  fechaPago         DateTime        @default(now())
+  duracionDias      Int             @default(30)
+  pagoActivo        Boolean         @default(true)
+  nutricionServicio Boolean         @default(true)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  rutinas           WorkoutRoutine[]
+  comidas           MealPlan[]
+}
+
+model WorkoutRoutine {
+  id          Int      @id @default(autoincrement())
+  clientId    Int
+  client      Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  nombre      String
+  diaIndex    Int
+  ejercicios  Json
+}
+
+model MealPlan {
+  id        Int      @id @default(autoincrement())
+  clientId  Int
+  client    Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  nombre    String
+  alimentos Json
+}

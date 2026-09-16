@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Andrea Rock Fitness App</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Librería de escáner de códigos de barras -->
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <style>
+    body { background-color: #080b11; color: #ffffff; font-family: 'Montserrat', sans-serif; }
+    .card-dark { background-color: #0f172a; border: 1px solid #1e293b; }
+    .btn-pink { background-color: #ff007a; color: white; }
+    .btn-pink:active { background-color: #d60067; }
+    .text-pink-custom { color: #ff007a; }
+
+    /* Discos de Kilogramos (Proporcionales y ordenados de mayor a menor) */
+    .plate-kg-25 { background-color: #ef4444; width: 14px; height: 58px; }
+    .plate-kg-20 { background-color: #3b82f6; width: 13px; height: 50px; }
+    .plate-kg-15 { background-color: #eab308; width: 11px; height: 42px; }
+    .plate-kg-10 { background-color: #22c55e; width: 9px; height: 36px; }
+    .plate-kg-5  { background-color: #ffffff; width: 7px; height: 28px; color: black; }
+    .plate-kg-2_5{ background-color: #a855f7; width: 6px; height: 22px; }
+
+    /* Discos de Libras (Proporcionales y ordenados de mayor a menor) */
+    .plate-lbs-45 { background-color: #ef4444; width: 14px; height: 58px; }
+    .plate-lbs-35 { background-color: #3b82f6; width: 13px; height: 50px; }
+    .plate-lbs-25 { background-color: #eab308; width: 11px; height: 42px; }
+    .plate-lbs-10 { background-color: #22c55e; width: 9px; height: 36px; }
+    .plate-lbs-5  { background-color: #ffffff; width: 7px; height: 28px; }
+    .plate-lbs-2_5{ background-color: #a855f7; width: 6px; height: 22px; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col p-4">
+
+  <!-- VISTA 1: LOGIN -->
+  <div id="login-screen" class="flex flex-col items-center justify-center flex-1 my-auto">
+    <div class="card-dark p-6 rounded-3xl w-full max-w-sm text-center shadow-2xl border border-pink-500/20">
+      <div class="mb-5 flex flex-col items-center">
+        <img src="logo.png" alt="Logo Andrea Rock" class="w-16 h-16 object-contain mb-2 rounded-2xl shadow-md border border-slate-800">
+        <h1 class="text-2xl font-black tracking-wider uppercase text-white">ANDREA <span class="text-pink-custom">ROCK</span></h1>
+        <span class="text-[9px] tracking-widest text-gray-400 uppercase font-bold mt-0.5">Elite Coaching & Training</span>
+      </div>
+      
+      <input type="text" id="token-input" placeholder="RCK-XXXXX" 
+        oninput="this.value = this.value.toUpperCase()" 
+        onkeydown="if(event.key === 'Enter') handleLogin()"
+        class="w-full bg-black/60 border border-gray-700 rounded-xl p-3.5 text-center text-xl font-mono tracking-widest uppercase mb-4 text-pink-custom focus:outline-none focus:border-pink-500">
+      
+      <button onclick="handleLogin()" class="w-full btn-pink py-3.5 rounded-xl font-bold text-sm shadow-lg tracking-wider uppercase">
+        <span id="btn-text">INGRESAR A LA APP</span>
+      </button>
+
+      <div id="error-box" class="mt-4 p-3 bg-red-950/80 border border-red-700/80 rounded-xl hidden text-left">
+        <p id="error-title" class="text-red-400 font-bold text-xs uppercase mb-1">Error</p>
+        <p id="error-msg" class="text-red-200 text-xs">Acceso denegado.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- VISTA 2: PANEL PRINCIPAL -->
+  <div id="app-screen" class="hidden flex-col flex-1">
+    <div class="flex justify-between items-center mb-4 pt-2 border-b border-slate-800 pb-3">
+      <div class="flex items-center space-x-2.5">
+        <img src="logo.png" alt="Logo Andrea Rock" class="w-9 h-9 object-contain rounded-xl border border-slate-800 shadow-sm">
+        <div>
+          <h1 class="text-base font-black tracking-wider uppercase leading-tight text-white">ANDREA <span class="text-pink-custom">ROCK</span></h1>
+          <p id="user-subtitle" class="text-[10px] text-gray-400 uppercase font-bold">Atleta</p>
+        </div>
+      </div>
+      
+      <div class="flex items-center space-x-2">
+        <button onclick="toggleUnit()" id="unit-btn" class="text-xs bg-pink-500/10 text-pink-custom border border-pink-500/30 px-3 py-1.5 rounded-xl font-black">KG</button>
+        <button onclick="handleLogout()" class="text-xs text-gray-300 bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-800 font-semibold">Salir</button>
+      </div>
+    </div>
+
+    <!-- TABS PRINCIPALES -->
+    <div class="grid grid-cols-3 gap-2 mb-4">
+      <button id="tab-rutina" onclick="switchTab('rutina')" class="py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider btn-pink">Rutina</button>
+      <button id="tab-nutricion" onclick="switchTab('nutricion')" class="py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider card-dark text-gray-400">Nutrición</button>
+      <button id="tab-progreso" onclick="switchTab('progreso')" class="py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider card-dark text-gray-400">Progreso</button>
+    </div>
+
+    <div id="content-area" class="flex-1 pb-6"></div>
+  </div>
+
+  <script>
+    const API_BASE = 'https://api.andrearockfitness.com';
+    let currentClientData = null;
+    let routinesCatalogData = [];
+    let currentUnit = 'KG'; 
+    let rutinaSubView = 'activa'; // 'activa' o 'marketplace'
+    let html5QrCode = null;
+
+    window.onload = function() {
+      const savedToken = localStorage.getItem('ar_client_token');
+      const savedData = localStorage.getItem('ar_client_data');
+      if (savedData) {
+        try {
+          currentClientData = JSON.parse(savedData);
+          showAppScreen();
+        } catch (e) { localStorage.removeItem('ar_client_data'); }
+      }
+      if (savedToken) {
+        document.getElementById('token-input').value = savedToken;
+        handleLogin(true);
+      }
+    };
+
+    function toggleUnit() {
+      currentUnit = currentUnit === 'KG' ? 'LBS' : 'KG';
+      document.getElementById('unit-btn').innerText = currentUnit;
+      if (rutinaSubView === 'activa') renderRutina(document.getElementById('content-area'));
+    }
+
+    async function handleLogin(silent = false) {
+      const tokenInput = document.getElementById('token-input').value.trim();
+      const errorBox = document.getElementById('error-box');
+      const errorMsg = document.getElementById('error-msg');
+      if (!silent) errorBox.classList.add('hidden');
+      if (!tokenInput) return;
+
+      try {
+        const res = await fetch(`${API_BASE}/api/client/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({ token: tokenInput }),
+          mode: 'cors'
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          currentClientData = data.client;
+          routinesCatalogData = data.catalog || [];
+          localStorage.setItem('ar_client_token', tokenInput);
+          localStorage.setItem('ar_client_data', JSON.stringify(data.client));
+          showAppScreen();
+        } else if (!silent) {
+          errorBox.classList.remove('hidden');
+          errorMsg.innerText = data.error || 'Token inválido.';
+        }
+      } catch (err) {
+        if (!silent && !currentClientData) {
+          errorBox.classList.add('hidden');
+          errorMsg.innerText = "Error de red con el servidor.";
+        }
+      }
+    }
+
+    function showAppScreen() {
+      document.getElementById('login-screen').classList.add('hidden');
+      document.getElementById('app-screen').classList.remove('hidden');
+      document.getElementById('app-screen').classList.add('flex');
+      document.getElementById('user-subtitle').innerText = currentClientData.name;
+      switchTab('rutina');
+    }
+
+    function switchTab(tab) {
+      if (html5QrCode && html5QrCode.isScanning) {
+        html5QrCode.stop().catch(() => {});
+      }
+
+      ['rutina', 'nutricion', 'progreso'].forEach(t => {
+        const btn = document.getElementById(`tab-${t}`);
+        btn.className = t === tab 
+          ? 'py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider btn-pink shadow-md' 
+          : 'py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider card-dark text-gray-400';
+      });
+
+      const container = document.getElementById('content-area');
+      if (tab === 'rutina') renderRutina(container);
+      if (tab === 'nutricion') renderNutricion(container);
+      if (tab === 'progreso') renderProgreso(container);
+    }
+
+    // --- CÁLCULO Y ORDENAMIENTO ESTRICTO DE DISCOS ---
+    function calculatePlates(totalWeight, unit) {
+      let barWeight = unit === 'KG' ? 20 : 45;
+      if (totalWeight <= barWeight) return [];
+      
+      let remaining = (totalWeight - barWeight) / 2;
+      let availablePlates = unit === 'KG' ? [25, 20, 15, 10, 5, 2.5] : [45, 35, 25, 10, 5, 2.5];
+      let result = [];
+
+      for (let plate of availablePlates) {
+        while (remaining >= plate - 0.01) {
+          result.push(plate);
+          remaining -= plate;
+        }
+      }
+      return result.sort((a, b) => b - a);
+    }
+
+    function renderPlateWidget(weightStr) {
+      let baseNumber = parseFloat(weightStr) || 0;
+      let displayWeight = currentUnit === 'LBS' ? Math.round(baseNumber * 2.20462) : baseNumber;
+      
+      const plates = calculatePlates(displayWeight, currentUnit);
+      
+      let counts = {};
+      plates.forEach(p => counts[p] = (counts[p] || 0) + 1);
+      let summaryText = Object.keys(counts).map(p => `${counts[p]}x ${p} ${currentUnit}`).join(' + ');
+      if (!summaryText) summaryText = "Solo barra olímpica";
+
+      // Lado izquierdo: invertido para que el disco más pesado quede pegado al centro de la barra
+      let platesLeft = [...plates].reverse();
+      let platesLeftHTML = platesLeft.map(p => {
+        let cssClass = currentUnit === 'KG' ? `plate-kg-${String(p).replace('.', '_')}` : `plate-lbs-${String(p).replace('.', '_')}`;
+        return `<div class="rounded-sm flex items-center justify-center text-[7px] font-black text-white shadow ${cssClass}">${p}</div>`;
+      }).join('');
+
+      // Lado derecho: orden normal para que el disco más pesado también quede pegado al centro de la barra
+      let platesRightHTML = plates.map(p => {
+        let cssClass = currentUnit === 'KG' ? `plate-kg-${String(p).replace('.', '_')}` : `plate-lbs-${String(p).replace('.', '_')}`;
+        return `<div class="rounded-sm flex items-center justify-center text-[7px] font-black text-white shadow ${cssClass}">${p}</div>`;
+      }).join('');
+      
+      let sideWeight = ((displayWeight - (currentUnit === 'KG' ? 20 : 45)) / 2).toFixed(1);
+
+      return `
+        <div class="mt-4 bg-black/70 p-4 rounded-2xl border border-slate-800">
+          <div class="text-center mb-3">
+            <span class="text-[10px] text-gray-400 uppercase tracking-widest font-bold block">Peso por lado: <strong class="text-white">${sideWeight} ${currentUnit}</strong></span>
+            <p class="text-[11px] text-pink-custom font-bold mt-0.5">${summaryText}</p>
+          </div>
+          
+          <div class="flex items-center justify-center space-x-1.5 py-2 overflow-x-auto">
+            <div class="w-3 h-10 bg-gray-600 rounded-l"></div>
+            <div class="flex space-x-1 items-center">${platesLeftHTML}</div>
+            <div class="w-8 h-4 bg-gray-400 rounded"></div>
+            <div class="flex space-x-1 items-center">${platesRightHTML}</div>
+            <div class="w-3 h-10 bg-gray-600 rounded-r"></div>
+          </div>
+          <p class="text-[9px] text-center text-gray-500 uppercase tracking-wider mt-2 font-bold">Gráfica Visual de Carga en Barra</p>
+        </div>
+      `;
+    }
+
+    // --- RENDERIZAR RUTINA (CON SUB-NAVEGACIÓN: ACTIVA VS CARTELERA) ---
+    function renderRutina(container) {
+      const routine = currentClientData.routine || [];
+      const unlocked = currentClientData.unlockedRoutines || ["rutina-base"];
+
+      container.innerHTML = `
+        <!-- SUB-MENÚ SUPERIOR DE RUTINAS -->
+        <div class="grid grid-cols-2 gap-2 mb-4 bg-slate-900/80 p-1.5 rounded-2xl border border-slate-800">
+          <button onclick="rutinaSubView='activa'; renderRutina(document.getElementById('content-area'))" 
+            class="py-2 rounded-xl font-bold text-xs uppercase tracking-wider ${rutinaSubView === 'activa' ? 'btn-pink shadow' : 'text-gray-400'}">
+            Rutina Semanal
+          </button>
+          <button onclick="rutinaSubView='marketplace'; renderRutina(document.getElementById('content-area'))" 
+            class="py-2 rounded-xl font-bold text-xs uppercase tracking-wider ${rutinaSubView === 'marketplace' ? 'btn-pink shadow' : 'text-gray-400'}">
+            Cartelera de Rutinas
+          </button>
+        </div>
+      `;
+
+      if (rutinaSubView === 'activa') {
+        let div = document.createElement('div');
+        div.innerHTML = `
+          <div class="card-dark p-5 rounded-3xl mb-4 border border-slate-800 shadow-lg">
+            <h2 class="text-xl font-bold text-white mb-1">Rutina Semanal Activa</h2>
+            <p class="text-[11px] text-pink-custom font-bold uppercase tracking-widest mb-4">Programa en curso</p>
+            
+            ${routine.length === 0 ? '<p class="text-gray-400 text-sm">Sin rutinas cargadas.</p>' : ''}
+
+            ${routine.map((ex, idx) => `
+              <div class="bg-black/50 p-4 rounded-2xl mb-4 border border-slate-800/80">
+                <div class="flex justify-between items-start mb-2">
+                  <h3 class="font-bold text-pink-custom text-base">${ex.exercise}</h3>
+                  <span class="text-xs bg-slate-800 px-2 py-1 rounded-lg text-gray-300">#${idx+1}</span>
+                </div>
+                <p class="text-sm text-gray-200 font-semibold mb-2">${ex.series} series x ${ex.reps} reps — <span class="text-white">${ex.weight}</span></p>
+                
+                ${ex.videoUrl ? `
+                  <div class="mb-3 rounded-xl overflow-hidden border border-slate-700 bg-black aspect-video relative">
+                    <iframe src="${ex.videoUrl}" class="w-full h-full pointer-events-none" frameborder="0" allowfullscreen></iframe>
+                    <div class="absolute inset-0 bg-transparent"></div>
+                  </div>
+                ` : ''}
+
+                ${renderPlateWidget(ex.weight)}
+              </div>
+            `).join('')}
+          </div>
+        `;
+        container.appendChild(div);
+      } else {
+        // MARKETPLACE / CARTELERA DE RUTINAS
+        let div = document.createElement('div');
+        let catalogHTML = routinesCatalogData.map(rut => {
+          let isUnlocked = unlocked.includes(rut.id);
+          let isActive = currentClientData.activeRoutineId === rut.id;
+
+          return `
+            <div class="card-dark p-5 rounded-3xl mb-4 border border-slate-800 shadow-xl relative overflow-hidden">
+              <div class="flex justify-between items-start mb-2">
+                <div>
+                  <span class="text-[9px] text-pink-custom font-bold uppercase tracking-widest">Por ${rut.coach}</span>
+                  <h3 class="text-lg font-black text-white uppercase">${rut.title}</h3>
+                </div>
+                <span class="px-3 py-1 rounded-full text-xs font-black ${rut.price === 0 ? 'bg-green-500/20 text-green-400 border border-green-500/40' : 'bg-pink-500/20 text-pink-custom border border-pink-500/40'}">
+                  ${rut.priceLabel}
+                </span>
+              </div>
+              
+              <p class="text-xs text-gray-300 mb-4">${rut.description}</p>
+
+              <div class="grid grid-cols-4 gap-1 text-center bg-black/40 p-2.5 rounded-xl border border-slate-800 mb-4">
+                <div><span class="text-[9px] text-gray-400 block uppercase">Semanas</span><strong class="text-xs text-white">${rut.weeks}</strong></div>
+                <div><span class="text-[9px] text-gray-400 block uppercase">Frecuencia</span><strong class="text-xs text-white">${rut.days}</strong></div>
+                <div><span class="text-[9px] text-gray-400 block uppercase">Nivel</span><strong class="text-xs text-white">${rut.level}</strong></div>
+                <div><span class="text-[9px] text-gray-400 block uppercase">Rating</span><strong class="text-xs text-pink-custom">${rut.rating}</strong></div>
+              </div>
+
+              ${isUnlocked ? `
+                <button onclick="setActiveRoutine('${rut.id}')" class="w-full py-3 rounded-xl font-bold text-xs uppercase tracking-wider ${isActive ? 'bg-slate-800 text-gray-400 border border-slate-700' : 'btn-pink shadow'}">
+                  ${isActive ? '✓ Rutina Activa Actual' : 'Cargar esta Rutina al Cliente Activo →'}
+                </button>
+              ` : `
+                <button onclick="requestRoutinePurchase('${rut.id}', '${rut.title}')" class="w-full btn-pink py-3 rounded-xl font-bold text-xs uppercase tracking-wider shadow-md">
+                  Solicitar Compra / Desbloquear (${rut.priceLabel}) →
+                </button>
+              `}
+            </div>
+          `;
+        }).join('');
+
+        div.innerHTML = `
+          <div class="mb-3">
+            <h2 class="text-xl font-bold text-white uppercase">Marketplace & Cartelera</h2>
+            <p class="text-xs text-gray-400">Programas de entrenamiento diseñados por nuestros coaches oficiales.</p>
+          </div>
+          ${catalogHTML}
+        `;
+        container.appendChild(div);
+      }
+    }
+
+    function setActiveRoutine(rutId) {
+      let selected = routinesCatalogData.find(r => r.id === rutId);
+      if (selected) {
+        currentClientData.activeRoutineId = rutId;
+        currentClientData.routine = selected.routine;
+        localStorage.setItem('ar_client_data', JSON.stringify(currentClientData));
+        rutinaSubView = 'activa';
+        renderRutina(document.getElementById('content-area'));
+        alert(`¡Programa "${selected.title}" cargado con éxito en tu rutina semanal!`);
+      }
+    }
+
+    async function requestRoutinePurchase(rutId, rutTitle) {
+      if (!confirm(`¿Deseas solicitar el desbloqueo del programa "${rutTitle}"? Se enviará una notificación de compra al coach para confirmar tu pago.`)) return;
+
+      try {
+        const res = await fetch(`${API_BASE}/api/client/request-purchase`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: currentClientData.token, routineId: rutId })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          currentClientData = data.client;
+          localStorage.setItem('ar_client_data', JSON.stringify(currentClientData));
+          alert("¡Solicitud enviada al coach con éxito! En cuanto se confirme el pago, el programa quedará desbloqueado.");
+          renderRutina(document.getElementById('content-area'));
+        } else {
+          alert(data.error || "No se pudo enviar la solicitud.");
+        }
+      } catch(e) {
+        alert("Error de conexión al procesar la solicitud de compra.");
+      }
+    }
+
+    function renderNutricion(container) {
+      const nut = currentClientData.nutrition || { calories: 0, macros: {}, meals: [] };
+      container.innerHTML = `
+        <div class="card-dark p-5 rounded-3xl mb-4 border border-slate-800 shadow-lg">
+          <h2 class="text-xl font-bold text-pink-custom mb-1">Plan Nutricional</h2>
+          <p class="text-sm text-gray-300 font-medium mb-3">Meta Calórica: <span class="text-white font-bold">${nut.calories || 2400} kcal</span></p>
+          <div class="grid grid-cols-3 gap-2 text-center pt-2 border-t border-slate-800">
+            <div class="bg-black/40 p-2 rounded-xl border border-slate-800"><span class="text-[10px] text-gray-400 uppercase font-bold">Proteína</span><p class="font-bold text-sm text-white">${nut.macros?.protein || '180g'}</p></div>
+            <div class="bg-black/40 p-2 rounded-xl border border-slate-800"><span class="text-[10px] text-gray-400 uppercase font-bold">Carbos</span><p class="font-bold text-sm text-white">${nut.macros?.carbs || '250g'}</p></div>
+            <div class="bg-black/40 p-2 rounded-xl border border-slate-800"><span class="text-[10px] text-gray-400 uppercase font-bold">Grasas</span><p class="font-bold text-sm text-white">${nut.macros?.fats || '65g'}</p></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderProgreso(container) {
+      const prog = currentClientData.progress || [];
+      container.innerHTML = `
+        <div class="card-dark p-5 rounded-3xl border border-slate-800 shadow-lg">
+          <h2 class="text-xl font-bold text-pink-custom mb-4">Marcas Personales</h2>
+          ${prog.map(p => `
+            <div class="bg-black/50 p-4 rounded-2xl mb-3 border border-slate-800/80 flex justify-between items-center">
+              <div><h3 class="font-bold text-white text-base">${p.exercise}</h3><span class="text-xs text-gray-500">${p.date}</span></div>
+              <div class="text-2xl font-black text-pink-custom">${p.weight}</div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function handleLogout() {
+      localStorage.removeItem('ar_client_token');
+      localStorage.removeItem('ar_client_data');
+      currentClientData = null;
+      document.getElementById('app-screen').classList.add('hidden');
+      document.getElementById('login-screen').classList.remove('hidden');
+      document.getElementById('token-input').value = '';
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "name": "andrea-rock-backend",
+  "version": "1.0.0",
+  "description": "API REST Backend para Andrea Rock Fitness",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^4.22.2",
+    "object-assign": "^4.1.1"
+  }
+}
