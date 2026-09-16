@@ -1,42 +1,19 @@
 {
-<<<<<<< HEAD
-  "name": "andrea-rock-motor",
-  "version": "1.0.0",
-  "description": "Motor Backend para base de datos",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js"
-  },
-  "dependencies": {
-    "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
-    "express": "^4.19.2",
-    "mongoose": "^8.3.2"
-  }
-=======
   "name": "andrea-rock-entrenamiento",
   "version": "1.0.0",
-  "description": "Plataforma integrada de entrenamiento y nutricion Andrea Rock Fitness",
-  "main": "backend/server.js",
+  "description": "Andrea Rock Fitness App & System",
+  "main": "index.js",
   "scripts": {
-    "start": "node backend/server.js",
-    "dev": "nodemon backend/server.js",
-    "cap:sync": "npx cap sync android",
-    "cap:open": "npx cap open android"
+    "start": "node backend/src/server.js"
   },
   "dependencies": {
-    "@capacitor/android": "^8.5.1",
-    "@capacitor/core": "^8.5.1",
+    "@capacitor/android": "^5.0.0",
+    "@capacitor/core": "^5.0.0",
     "cors": "^2.8.5",
-    "express": "^4.19.2"
+    "express": "^4.18.2",
+    "pg": "^8.11.3"
   },
   "devDependencies": {
-    "@capacitor/cli": "^6.2.2",
-    "nodemon": "^3.1.0"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs"
->>>>>>> b80a78f (Restauración de archivos y estructura de producción)
+    "@capacitor/cli": "^5.0.0"
+  }
 }
