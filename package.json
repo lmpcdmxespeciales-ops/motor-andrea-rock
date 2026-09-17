@@ -1,22 +1,19 @@
 {
   "name": "andrea-rock-entrenamiento",
   "version": "1.0.0",
-  "description": "Andrea Rock Fitness Backend & App",
+  "description": "Andrea Rock Fitness App",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
-  "engines": {
-    "node": ">=18.0.0"
-  },
   "dependencies": {
+    "@capacitor/android": "^6.1.2",
+    "@capacitor/core": "^6.1.2",
     "cors": "^2.8.5",
     "express": "^4.19.2",
     "mongoose": "^8.4.1"
   },
   "devDependencies": {
-    "@capacitor/android": "^6.1.2",
-    "@capacitor/cli": "^6.1.2",
-    "@capacitor/core": "^6.1.2"
+    "@capacitor/cli": "^6.1.2"
   }
 }

@@ -87,7 +87,7 @@ app.delete('/api/clients/:id', async (req, res) => {
 });
 
 app.get('/', (req, res) => {
-  res.send('🚀 Servidor Andrea Rock Fitness operando en MongoDB Atlas');
+  res.send('🚀 Servidor Andrea Rock Fitness operando correctamente con MongoDB Atlas');
 });
 
 app.listen(PORT, () => {
